@@ -2,7 +2,7 @@
   "name": "plot-generator",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://AndrianPoida.github.io/plot-builder",
+  "homepage": "https://andrianpoida.github.io/plot-builder",
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",

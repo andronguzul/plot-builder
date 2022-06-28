@@ -15,7 +15,7 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route path='/' element={<Constructor />} />
+        <Route path='/plot-builder' element={<Constructor />} />
         {/* <Route path='auth' element={<Auth />} />
         <Route path='/:id' element={<Constructor />} /> */}
       </Routes>
