@@ -1,0 +1,46 @@
+@import './auth.scss';
+@import './dashboard.scss';
+@import './constructor.scss';
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #282c34;
+  padding: 20px;
+  color: white;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.list-group-item {
+  cursor: pointer;
+  &:hover {
+    background-color: #e8e5e5;
+  }
+}
+
+textarea { resize: none; }
+
+.in-row {
+  display: flex;
+  align-items: center;
+}
+.margined-top {
+  margin-top: 10px;
+}
+.margined-right {
+  margin-right: 10px;
+}
+.margined-bottom {
+  margin-bottom: 10px;
+}
+.spaced-between {
+  justify-content: space-between;
+}
