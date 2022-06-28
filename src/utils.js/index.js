@@ -66,3 +66,17 @@ export function validateMessages(messages) {
   }
   return true;
 }
+
+export function getAllAuthors(messages) {
+  const authors = [];
+  for (const message of messages) {
+    if (!authors.includes(message.author)) authors.push(message.author);
+    if (message.possible_answers) {
+      for (const answer of message.possible_answers) {
+        if (!answer.fork) continue;
+        authors.push(...getAllAuthors(answer.fork).filter(x => !authors.includes(x)));
+      }
+    }
+  }
+  return authors;
+}

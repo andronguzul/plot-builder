@@ -44,6 +44,11 @@ function MessageEditor(props) {
     else if (author && !props.members.includes(author)) setAuthor();
   }, [props.members, author]);
 
+  useEffect(() => {
+    setMessage(props.data.text || '');
+    setPossibleAnswers(props.data.possible_answers || []);
+  }, [props.data.text, props.data.possible_answers]);
+
   const onMessageUpdate = (e) => {
     setMessage(e.target.value);
   };

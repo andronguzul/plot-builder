@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Accordion, Button, ButtonGroup, Input } from 'reactstrap';
 import Members from '../components/Constructor/Members';
 import MessageEditor from '../components/Constructor/MessageEditor';
-import { validateMessages } from '../utils.js';
+import { getAllAuthors, validateMessages } from '../utils.js';
 
 function Constructor() {
   const [messages, setMessages] = useState([{}]);
@@ -39,6 +39,29 @@ function Constructor() {
     }
     setMembersOpen(false);
   };
+
+  const onImport = (e) => {
+    const cancel = e.target.files.length !== 1;
+    if (cancel) return;
+    const fileName = e.target.files[0].name;
+    const fileReader = new FileReader();
+    fileReader.readAsText(e.target.files[0], 'UTF-8');
+    fileReader.onload = e => {
+      try {
+        const data = e.target.result;
+        const parsed = JSON.parse(data);
+        if (!parsed.length || !validateMessages(parsed)) {
+          throw new Error();
+        }
+        setMessages(parsed);
+        setMembers(getAllAuthors(parsed));
+        setChatName(fileName.split('.')[0]);
+        console.log(parsed, getAllAuthors(parsed));
+      } catch (e) {
+        console.log('Invalid file provided', e);
+      }
+    };
+  }
 
   const onDownload = async () => {
     const fileName = chatName;
@@ -83,6 +106,7 @@ function Constructor() {
         <Button onClick={() => setMembersOpen(true)}>Members</Button>
       </div>
       <ButtonGroup className='constructor-actions-right'>
+        <Input type='file' onChange={onImport}>Import</Input>
         <Button disabled={!canDownload} onClick={onDownload}>Download</Button>
       </ButtonGroup>
       <Members

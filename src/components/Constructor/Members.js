@@ -1,8 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Card, Input, Modal, ModalBody, ModalHeader } from 'reactstrap';
 
 function Members(props) {
   const [members, setMembers] = useState(props.members || []);
+
+  useEffect(() => {
+    setMembers(props.members || []);
+  }, [props.members]);
 
   const onClose = () => {
     setMembers([]);
