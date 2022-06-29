@@ -9,12 +9,12 @@ function Members(props) {
   }, [props.members]);
 
   const onClose = () => {
-    setMembers([]);
+    setMembers(props.members || []);
     props.onClose();
   };
 
   const onSave = () => {
-    props.onClose(members);
+    props.onSave(members);
   };
 
   const onAddMember = () => {
@@ -42,7 +42,7 @@ function Members(props) {
       <ModalHeader toggle={onClose}>
         Members
       </ModalHeader>
-      <ModalBody className='members-content'>
+      <ModalBody>
         {members.map((member, indx) =>
           <Card key={indx} className={'member-card ' + (indx ? 'margined-top' : '')}>
             <div className='in-row spaced-between'>

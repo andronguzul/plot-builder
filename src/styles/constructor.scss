@@ -42,3 +42,14 @@
     padding: 10px;
   }
 }
+
+.translations {
+  color: black;
+  min-width: 800px;
+  .table-headers {
+    text-align: center;
+  }
+  .table-key {
+    padding-top: 15px;
+  }
+}
