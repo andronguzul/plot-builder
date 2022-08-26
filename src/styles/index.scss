@@ -1,6 +1,7 @@
 @import './auth.scss';
 @import './dashboard.scss';
 @import './constructor.scss';
+@import './chat.scss';
 
 body {
   margin: 0;
@@ -9,9 +10,13 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #282c34;
-  padding: 20px;
+  background-color: #1a1d22;
+  padding: 0;
   color: white;
+}
+
+input:focus, textarea:focus {
+  outline: none !important;
 }
 
 code {
@@ -46,4 +51,7 @@ textarea { resize: none; }
 }
 .hidden {
   display: none;
+}
+.checkbox-label {
+  margin-left: 5px;
 }

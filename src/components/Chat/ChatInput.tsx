@@ -1,0 +1,171 @@
+import React, { useEffect, useState } from 'react';
+import { Input, Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
+import { IMessageDataType, MessageType, PLAYER } from '../../types';
+import { AuthorSelectorModal } from './AuthorSelectorModal';
+
+export interface ChatInputProps {
+  members: string[];
+  editMessage?: IMessageDataType;
+  onSubmit: Function;
+}
+
+export const ChatInput = (props: ChatInputProps) => {
+  const tabs = ['text', 'file'];
+  const members = [...props.members, PLAYER];
+
+  const [author, setAuthor] = useState(members[0]);
+  const [message, setMessage] = useState('');
+  const [filename, setFilename] = useState('');
+  const [fileMeta, setFileMeta] = useState('');
+  const [activeTab, setActiveTab] = useState(tabs[0]);
+  const [isShiftDown, setIsShiftDown] = useState(false);
+  const [isCntrlDown, setIsCntrlDown] = useState(false);
+  const [authorSelectorModalOpened, setAuthorSelectorModalOpened] = useState(false);
+
+  // const textInputRef = useRef<HTMLInputElement>();
+  // const fileInputRef = useRef<HTMLInputElement>();
+
+  useEffect(() => {
+    if (props.editMessage) {
+      setAuthor(props.editMessage.author);
+      if (props.editMessage.type === MessageType.Text) {
+        setMessage(props.editMessage.text || '');
+        setActiveTab(tabs[0]);
+        // textInputRef.current?.focus();
+      } else {
+        setMessage('');
+        setFilename(props.editMessage.filename || '');
+        setFileMeta(props.editMessage.file_meta || '');
+        setActiveTab(tabs[1]);
+        // fileInputRef.current.focus();
+      }
+    }
+  }, [props.editMessage]);
+
+  const switchAuthour = () => {
+    const currAuthorIndx = members.indexOf(author);
+    const nextAuthorIndx = currAuthorIndx + 1 === members.length ? 0 : currAuthorIndx + 1;
+    setAuthor(members[nextAuthorIndx]);
+  };
+
+  const onSubmit = () => {
+    if (!message) return;
+    setActiveTab(tabs[0]);
+    setMessage('');
+    setFilename('');
+    setFileMeta('');
+    switchAuthour();
+
+    if (activeTab === tabs[0]) {
+      props.onSubmit({
+        ...props.editMessage,
+        author,
+        type: 'text',
+        text: message,
+        selected: true,
+      });
+    } else {
+      props.onSubmit({
+        ...props.editMessage,
+        author,
+        type: 'file',
+        filename,
+        file_meta: fileMeta,
+        selected: true,
+      });
+    }
+  };
+
+  const onTextMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const isEnterPressed = e.target.value.slice(-1) === '\n';
+    if (isEnterPressed) {
+      if (isShiftDown) {
+        if (!message) return;
+        setMessage(e.target.value);
+      } else {
+        onSubmit();
+      }
+    } else {
+      setMessage(e.target.value);
+    }
+  }
+
+  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Shift') setIsShiftDown(true);
+    else if (e.key === 'Control') setIsCntrlDown(true);
+    else if (e.keyCode === 190 && isCntrlDown) switchAuthour();
+  };
+
+  const onKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Shift') setIsShiftDown(false);
+    else if (e.key === 'Control') setIsCntrlDown(false);
+  };
+
+  return (
+    <div className='chat-input-container'>
+      <div className='header'>
+        <Nav tabs className='tabs'>
+          <NavItem>
+            <NavLink
+              className={activeTab === tabs[0] ? 'tab active' : 'tab'}
+              onClick={() => setActiveTab(tabs[0])}
+            >
+              Text
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink
+              className={activeTab === tabs[1] ? 'tab active' : 'tab'}
+              onClick={() => setActiveTab(tabs[1])}
+            >
+              File
+            </NavLink>
+          </NavItem>
+        </Nav>
+        <div className='message-author' onClick={() => setAuthorSelectorModalOpened(true)}>
+          {author}
+        </div>
+      </div>
+      <TabContent activeTab={activeTab}>
+        <TabPane tabId={tabs[0]}>
+          <Input
+            placeholder='Write a message...'
+            value={message}
+            onChange={onTextMessageChange}
+            onKeyDown={onKeyDown}
+            onKeyUp={onKeyUp}
+            type='textarea'
+            className='text-input shadow-none'
+            // ref={textInputRef}
+          />
+        </TabPane>
+        <TabPane tabId={tabs[1]}>
+          <div className='file-input-container'>
+            <Input
+              placeholder='Filename'
+              value={filename}
+              onChange={e => setFilename(e.target.value)}
+              className='file-input filename shadow-none'
+              // ref={fileInputRef}
+            />
+            <Input
+              placeholder='File meta'
+              value={fileMeta}
+              onChange={e => setFileMeta(e.target.value)}
+              type='textarea'
+              className='file-input filemeta shadow-none'
+            />
+          </div>
+        </TabPane>
+      </TabContent>
+      {props.members.length &&
+        <AuthorSelectorModal
+          open={authorSelectorModalOpened}
+          onClose={() => setAuthorSelectorModalOpened(false)}
+          members={members}
+          onSelectAuthor={(member: string) => setAuthor(member)}
+        />
+      }
+    </div>
+  )
+}

@@ -6,16 +6,15 @@ import {
   Route,
 } from 'react-router-dom';
 import './styles/index.scss';
-// import Auth from './pages/Auth';
-// import Dashboard from './pages/Dashboard';
-import Constructor from './pages/Constructor';
+// import Constructor from './pages/Constructor';
+import ChatPage from './pages/Chat';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route path='/plot-builder' element={<Constructor />} />
+        <Route path='/plot-builder' element={<ChatPage />} />
         {/* <Route path='auth' element={<Auth />} />
         <Route path='/:id' element={<Constructor />} /> */}
       </Routes>
