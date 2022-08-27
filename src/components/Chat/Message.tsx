@@ -1,5 +1,5 @@
 import { Button, ButtonGroup, Input } from 'reactstrap';
-import { PLAYER } from '../../types';
+import { IMessage, PLAYER } from '../../types';
 
 export interface MessageProps {
   text?: string;
@@ -16,7 +16,11 @@ export interface MessageProps {
   onAddMessage: Function;
   onFork?: Function;
   onRemove: Function;
-  selectionMode: boolean;
+  restructurePhase: number;
+  existsInRestructureFromData: boolean;
+  restructureFromDataCanBeChanged: boolean;
+  onRestructureFromDataChange: Function;
+  isRestructureToData: boolean;
 }
 
 export const Message = (props: MessageProps) => {
@@ -31,9 +35,13 @@ export const Message = (props: MessageProps) => {
       else if (props.dataItemIndx === props.dataItemsLength - 1) listItemSuffix = 'last';
     }
     const selectedSuffix = props.isSelected ? '' : 'not-selected';
-    const marginSuffix = (props.someClicked && !props.thisClicked && !props.selectionMode) ? 'margined-right' : ''
+    let marginSuffix = (props.someClicked && !props.thisClicked) ? 'margined-right' : '';
+    if (props.restructurePhase === 1) {
+      marginSuffix = (!isPlayerMessage || props.dataItemIndx === 0) ? '' : 'restructure-margin';
+    }
     dataItemSuffix = props.dataItemsLength! > 1 ? `data-item ${selectedSuffix} ${listSuffix} ${listItemSuffix} ${marginSuffix}` : '';
   }
+  const restructureToDataSuffix = props.isRestructureToData ? 'restructure-to-data' : '';
 
   const onClickMessage = () => {
     if (isPlayerMessage && !props.isSelected) {
@@ -43,9 +51,16 @@ export const Message = (props: MessageProps) => {
   };
 
   return (
-    <div className={`message-container ${playerSuffix} ${dataItemSuffix}`}>
-      {props.selectionMode ?
-        <Input type='checkbox' className='message-checkbox' /> :
+    <div className={`message-container ${playerSuffix} ${restructureToDataSuffix} ${dataItemSuffix}`}>
+      {props.restructurePhase === 1 ?
+        (!isPlayerMessage || props.dataItemIndx === 0) &&
+        <Input
+          type='checkbox'
+          className='message-checkbox'
+          onChange={(e) => props.onRestructureFromDataChange?.(e.target.checked)}
+          disabled={!props.restructureFromDataCanBeChanged}
+          checked={props.existsInRestructureFromData}
+        /> :
         props.thisClicked &&
         <div className='add-actions'>
           {isPlayerMessage &&
@@ -58,7 +73,7 @@ export const Message = (props: MessageProps) => {
         <div className='message-author'>{props.author}</div>
         <div className={`message-text ${props.text ? '' : 'empty'}`}>{props.text || 'Write a message...'}</div>
       </div>
-      {!props.selectionMode && props.thisClicked &&
+      {!props.restructurePhase && props.thisClicked &&
         <ButtonGroup className='message-actions'>
           <Button onClick={() => props.onEdit()}>Edit</Button>
           {isPlayerMessage && <Button onClick={() => props.onFork!()}>Fork</Button>}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { IMessage, IMessageDataType, INpcMessageData, IPlayerMessageData, MessageType, PLAYER } from '../../types';
-import { removeField } from '../../utils';
+import { messageExists, removeField } from '../../utils';
 import { Message } from './Message';
 
 export interface MessagesProps {
@@ -9,7 +9,11 @@ export interface MessagesProps {
   onEditMessage: Function;
   onClick: Function;
   clickedMsg?: IMessageDataType;
-  selectionMode: boolean;
+  restructurePhase: number;
+  restructureFromData: IMessage[];
+  restructureToData?: IMessage;
+  onRestructureFromDataChange?: Function;
+  onRestructureToDataChange?: Function;
 }
 
 export const Messages = (props: MessagesProps) => {
@@ -33,8 +37,8 @@ export const Messages = (props: MessagesProps) => {
       messageToMutate.playerMessageData![dataItemIndx].isEditing = true;
       msg = messageToMutate.playerMessageData![dataItemIndx];
     } else {
-      messageToMutate.messageData!.isEditing = true;
-      msg = messageToMutate.messageData!;
+      messageToMutate.npcMessageData!.isEditing = true;
+      msg = messageToMutate.npcMessageData!;
     }
     props.onEditMessage(msg, messagesToMutate);
   };
@@ -57,13 +61,13 @@ export const Messages = (props: MessagesProps) => {
       props.onEditMessage(msg, messagesToMutate);
     } else {
       const msg: INpcMessageData = {
-        author: messagesToMutate[msgIndx].messageData!.author,
+        author: messagesToMutate[msgIndx].npcMessageData!.author,
         text: '',
         isEditing: true,
         type: MessageType.Text,
       };
       messagesToMutate.splice(msgIndx + 1, 0, {
-        messageData: msg
+        npcMessageData: msg
       });
       props.onEditMessage(msg, messagesToMutate);
     }
@@ -87,6 +91,8 @@ export const Messages = (props: MessagesProps) => {
         const selectedOption = msg.playerMessageData?.find(x => x.selected)!;
         const selectedOptionIndx = msg.playerMessageData?.indexOf(selectedOption) || 0;
         const someOptionClicked = msg.playerMessageData?.some(o => o === props.clickedMsg);
+        const existsInRestructureFromData = props.restructurePhase ? messageExists(props.restructureFromData, msg) : false;
+        const restructureFromDataCanBeChanged = !existsInRestructureFromData || props.restructureFromData.includes(msg);
         return (
           <React.Fragment key={msgIndx}>
             {msg.playerMessageData ?
@@ -100,25 +106,33 @@ export const Messages = (props: MessagesProps) => {
                   isSelected={dataItem.selected}
                   dataItemIndx={dataItemIndx}
                   dataItemsLength={msg.playerMessageData!.length}
-                  onClick={() => props.onClick(dataItem)}
+                  onClick={() => props.restructurePhase === 2 ? props.onRestructureToDataChange?.(msg) : props.onClick(dataItem)}
                   thisClicked={dataItem === props.clickedMsg}
                   someClicked={someOptionClicked}
                   onAddDataItem={() => onAdd(msgIndx, dataItemIndx)}
                   onAddMessage={() => onAdd(msgIndx)}
                   onRemove={() => {}}
                   onFork={() => {}}
-                  selectionMode={props.selectionMode}
+                  restructurePhase={props.restructurePhase}
+                  existsInRestructureFromData={existsInRestructureFromData}
+                  restructureFromDataCanBeChanged={restructureFromDataCanBeChanged}
+                  onRestructureFromDataChange={(statement: boolean) => props.onRestructureFromDataChange?.(msg, statement)}
+                  isRestructureToData={props.restructureToData === msg}
                 />
               ) :
               <Message
-                author={msg.messageData!.author}
-                text={msg.messageData!.text}
+                author={msg.npcMessageData!.author}
+                text={msg.npcMessageData!.text}
                 onEdit={() => onEdit(msgIndx)}
-                onClick={() => props.onClick(msg)}
+                onClick={() => props.restructurePhase === 2 ? props.onRestructureToDataChange?.(msg) : props.onClick(msg.npcMessageData)}
                 thisClicked={msg === props.clickedMsg}
                 onAddMessage={() => onAdd(msgIndx)}
                 onRemove={() => {}}
-                selectionMode={props.selectionMode}
+                restructurePhase={props.restructurePhase}
+                existsInRestructureFromData={existsInRestructureFromData}
+                restructureFromDataCanBeChanged={restructureFromDataCanBeChanged}
+                onRestructureFromDataChange={(statement: boolean) => props.onRestructureFromDataChange?.(msg, statement)}
+                isRestructureToData={props.restructureToData === msg}
               />
             }
             {selectedOption?.fork &&
@@ -128,7 +142,11 @@ export const Messages = (props: MessagesProps) => {
                 onEditMessage={(msg: IMessageDataType, fork: IMessage[]) => onForkEdit(msg, fork, msgIndx, selectedOptionIndx)}
                 onClick={props.onClick}
                 clickedMsg={props.clickedMsg}
-                selectionMode={props.selectionMode}
+                restructurePhase={props.restructurePhase}
+                restructureFromData={props.restructureFromData}
+                restructureToData={props.restructureToData}
+                onRestructureFromDataChange={props.onRestructureFromDataChange}
+                onRestructureToDataChange={props.onRestructureToDataChange}
               />
             }
           </React.Fragment>

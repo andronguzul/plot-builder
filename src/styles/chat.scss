@@ -74,6 +74,10 @@
                 margin-right: 30px;
               }
 
+              &.restructure-margin {
+                margin-right: 26px;
+              }
+
               &.not-selected {
                 background-color: #a37349;
 
@@ -99,6 +103,11 @@
           }
         }
 
+        &.restructure-to-data {
+          border: 2px solid white;
+          border-radius: 10px;
+        }
+
         &.player {
           flex-direction: row-reverse;
 
@@ -122,12 +131,31 @@
             margin-top: 0;
             margin-bottom: 0;
 
+            &.restructure-to-data {
+              border: 0;
+              border-radius: 0;
+              border-left: 2px solid white;
+              border-right: 2px solid white;
+            }
+
             &.first {
               margin-top: 10px;
+
+              &.restructure-to-data {
+                border-top-left-radius: 10px;
+                border-top-right-radius: 10px;
+                border-top: 2px solid white;
+              }
             }
 
             &.last {
               margin-bottom: 10px;
+
+              &.restructure-to-data {
+                border-bottom-left-radius: 10px;
+                border-bottom-right-radius: 10px;
+                border-bottom: 2px solid white;
+              }
             }
           }
         }
@@ -199,6 +227,7 @@
     background-color: rgb(29, 29, 29);
     color: white;
     min-height: 60px;
+    width: 100%;
   }
 
   .file-input-container {

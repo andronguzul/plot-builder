@@ -5,7 +5,14 @@ import { Chat } from './Chat';
 function ChatWrapperTmp() {
   const [messages, setMessages] = useState<IMessage[]>([
     {
-      messageData: {
+      npcMessageData: {
+        type: MessageType.Text,
+        text: 'Hey man',
+        author: 'Joe',
+      }
+    },
+    {
+      npcMessageData: {
         type: MessageType.Text,
         text: 'How r u doing?',
         author: 'Joe',
@@ -20,11 +27,21 @@ function ChatWrapperTmp() {
           selected: true,
           fork: [
             {
-              messageData: {
+              npcMessageData: {
                 type: MessageType.Text,
                 text: 'Glad to hear!',
                 author: 'Joe'
               }
+            },
+            {
+              playerMessageData: [
+                {
+                  type: MessageType.Text,
+                  text: 'Thanks man',
+                  author: 'Me',
+                  selected: true,
+                }
+              ]
             }
           ]
         },
@@ -35,7 +52,7 @@ function ChatWrapperTmp() {
           selected: false,
           fork: [
             {
-              messageData: {
+              npcMessageData: {
                 type: MessageType.Text,
                 text: 'My bad :(',
                 author: 'Joe'
@@ -56,7 +73,7 @@ function ChatWrapperTmp() {
       ],
     },
     {
-      messageData: {
+      npcMessageData: {
         type: MessageType.Text,
         text: 'Fine, thanks!',
         author: 'Joe',

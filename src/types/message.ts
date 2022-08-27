@@ -24,6 +24,6 @@ export interface IPlayerMessageData extends IMessageData {
 export type IMessageDataType = INpcMessageData | IPlayerMessageData;
 
 export interface IMessage {
-  messageData?: IMessageData;
+  npcMessageData?: INpcMessageData;
   playerMessageData?: IPlayerMessageData[];
 }

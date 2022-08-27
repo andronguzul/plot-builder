@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Input, Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import { IMessageDataType, MessageType, PLAYER } from '../../types';
 import { AuthorSelectorModal } from './AuthorSelectorModal';
@@ -10,7 +10,7 @@ export interface ChatInputProps {
 }
 
 export const ChatInput = (props: ChatInputProps) => {
-  const tabs = ['text', 'file'];
+  const tabs = [MessageType.Text, MessageType.File];
   const members = [...props.members, PLAYER];
 
   const [author, setAuthor] = useState(members[0]);
@@ -20,24 +20,25 @@ export const ChatInput = (props: ChatInputProps) => {
   const [activeTab, setActiveTab] = useState(tabs[0]);
   const [isShiftDown, setIsShiftDown] = useState(false);
   const [isCntrlDown, setIsCntrlDown] = useState(false);
+  const [isEnterDown, setIsEnterDown] = useState(false);
   const [authorSelectorModalOpened, setAuthorSelectorModalOpened] = useState(false);
 
-  // const textInputRef = useRef<HTMLInputElement>();
-  // const fileInputRef = useRef<HTMLInputElement>();
+  const textInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (props.editMessage) {
       setAuthor(props.editMessage.author);
       if (props.editMessage.type === MessageType.Text) {
         setMessage(props.editMessage.text || '');
-        setActiveTab(tabs[0]);
-        // textInputRef.current?.focus();
+        setActiveTab(MessageType.Text);
+        textInputRef.current?.focus();
       } else {
         setMessage('');
         setFilename(props.editMessage.filename || '');
         setFileMeta(props.editMessage.file_meta || '');
-        setActiveTab(tabs[1]);
-        // fileInputRef.current.focus();
+        setActiveTab(MessageType.File);
+        fileInputRef.current?.focus();
       }
     }
   }, [props.editMessage]);
@@ -61,7 +62,7 @@ export const ChatInput = (props: ChatInputProps) => {
         ...props.editMessage,
         author,
         type: 'text',
-        text: message,
+        text: message.trim(),
         selected: true,
       });
     } else {
@@ -69,16 +70,15 @@ export const ChatInput = (props: ChatInputProps) => {
         ...props.editMessage,
         author,
         type: 'file',
-        filename,
-        file_meta: fileMeta,
+        filename: filename.trim(),
+        file_meta: fileMeta.trim(),
         selected: true,
       });
     }
   };
 
   const onTextMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const isEnterPressed = e.target.value.slice(-1) === '\n';
-    if (isEnterPressed) {
+    if (isEnterDown) {
       if (isShiftDown) {
         if (!message) return;
         setMessage(e.target.value);
@@ -92,12 +92,14 @@ export const ChatInput = (props: ChatInputProps) => {
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Shift') setIsShiftDown(true);
+    else if (e.key === 'Enter') setIsEnterDown(true);
     else if (e.key === 'Control') setIsCntrlDown(true);
-    else if (e.keyCode === 190 && isCntrlDown) switchAuthour();
+    else if ((e.key === '.' || e.key === 'ю') && isCntrlDown) switchAuthour();
   };
 
   const onKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Shift') setIsShiftDown(false);
+    else if (e.key === 'Enter') setIsEnterDown(false);
     else if (e.key === 'Control') setIsCntrlDown(false);
   };
 
@@ -136,7 +138,7 @@ export const ChatInput = (props: ChatInputProps) => {
             onKeyUp={onKeyUp}
             type='textarea'
             className='text-input shadow-none'
-            // ref={textInputRef}
+            innerRef={textInputRef}
           />
         </TabPane>
         <TabPane tabId={tabs[1]}>
@@ -146,7 +148,7 @@ export const ChatInput = (props: ChatInputProps) => {
               value={filename}
               onChange={e => setFilename(e.target.value)}
               className='file-input filename shadow-none'
-              // ref={fileInputRef}
+              innerRef={fileInputRef}
             />
             <Input
               placeholder='File meta'
