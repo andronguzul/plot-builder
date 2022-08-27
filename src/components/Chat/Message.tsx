@@ -1,5 +1,7 @@
+import { useEffect } from 'react';
+import { useState } from 'react';
 import { Button, ButtonGroup, Input } from 'reactstrap';
-import { IMessage, PLAYER } from '../../types';
+import { PLAYER } from '../../types';
 
 export interface MessageProps {
   text?: string;
@@ -21,9 +23,18 @@ export interface MessageProps {
   restructureFromDataCanBeChanged: boolean;
   onRestructureFromDataChange: Function;
   isRestructureToData: boolean;
+  trigger?: string;
+  onTriggerChange: Function;
 }
 
 export const Message = (props: MessageProps) => {
+  const [triggerActionClicked, setTriggerActionClicked] = useState(false);
+  const [triggerValue, setTriggerValue] = useState('');
+
+  useEffect(() => {
+    if (props.trigger) setTriggerValue(props.trigger);
+  }, [props.trigger]);
+
   const isPlayerMessage = props.author === PLAYER;
   const playerSuffix = isPlayerMessage ? 'player' : '';
   let dataItemSuffix = '';
@@ -48,6 +59,11 @@ export const Message = (props: MessageProps) => {
       props.onSelectDataItem!();
     }
     props.onClick();
+  };
+
+  const onSubmitTriggerValue = () => {
+    props.onTriggerChange(triggerValue);
+    setTriggerActionClicked(false);
   };
 
   return (
@@ -77,8 +93,28 @@ export const Message = (props: MessageProps) => {
         <ButtonGroup className='message-actions'>
           <Button onClick={() => props.onEdit()}>Edit</Button>
           {isPlayerMessage && <Button onClick={() => props.onFork!()}>Fork</Button>}
+          {triggerActionClicked ?
+            <Input
+              className='trigger-input'
+              placeholder='Trigger value'
+              value={triggerValue}
+              onChange={(e) => setTriggerValue(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && onSubmitTriggerValue()}
+            /> :
+            <>
+              <Button onClick={() => setTriggerActionClicked(true)}>{props.trigger ? 'Edit' : 'Add'} Trigger</Button>
+              {props.trigger &&
+                <Button onClick={() => props.onTriggerChange()}>Remove Trigger</Button>
+              }
+            </>
+          }
           <Button onClick={() => props.onRemove()} color='danger'>Remove</Button>
         </ButtonGroup>
+      }
+      {props.trigger &&
+        <div className='trigger'>
+          {props.trigger}
+        </div>
       }
     </div>
   );

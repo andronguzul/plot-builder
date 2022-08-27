@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { IMessage, MessageType } from '../../types';
+import { IMessage } from '../../types';
 import { Chat } from './Chat';
 
 function ChatWrapperTmp() {

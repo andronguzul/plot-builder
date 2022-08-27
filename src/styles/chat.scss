@@ -42,6 +42,9 @@
 
         .message-actions {
           margin-left: 10px;
+          .trigger-input {
+            border-radius: 0;
+          }
         }
 
         .message {
@@ -130,6 +133,15 @@
           }
         }
 
+        .trigger {
+          margin-left: 20px;
+          font-size: 12px;
+          font-weight: bold;
+          background-color: #a37349;
+          padding: 5px;
+          border-radius: 5px;
+        }
+
         &.player {
           flex-direction: row-reverse;
 
@@ -147,6 +159,11 @@
           .message-actions {
             margin-left: 0;
             margin-right: 10px;
+          }
+
+          .trigger {
+            margin-left: 0;
+            margin-right: 20px;
           }
 
           &.data-item {

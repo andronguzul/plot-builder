@@ -99,6 +99,16 @@ export const Messages = (props: MessagesProps) => {
     props.onChangeMessages(messagesToMutate);
   };
 
+  const onTriggerValueChange = (value: string, msgIndx: number, dataItemIndx?: number) => {
+    const messagesToMutate = [...props.data];
+    if (dataItemIndx !== undefined) {
+      messagesToMutate[msgIndx].playerMessageData![dataItemIndx].trigger = value;
+    } else {
+      messagesToMutate[msgIndx].npcMessageData!.trigger = value;
+    }
+    props.onChangeMessages(messagesToMutate);
+  };
+
   const onForkChangeMessages = (fork: IMessage[], msgIndx: number, dataItemIndx: number) => {
     const messagesToMutate = [...props.data];
     messagesToMutate[msgIndx].playerMessageData![dataItemIndx].fork = fork;
@@ -144,6 +154,8 @@ export const Messages = (props: MessagesProps) => {
                   restructureFromDataCanBeChanged={restructureFromDataCanBeChanged}
                   onRestructureFromDataChange={(statement: boolean) => props.onRestructureFromDataChange?.(msg, statement)}
                   isRestructureToData={props.restructureToData === dataItem}
+                  trigger={dataItem.trigger}
+                  onTriggerChange={(value: string) => onTriggerValueChange(value, msgIndx, dataItemIndx)}
                 />
               ) :
               <Message
@@ -159,6 +171,8 @@ export const Messages = (props: MessagesProps) => {
                 restructureFromDataCanBeChanged={restructureFromDataCanBeChanged}
                 onRestructureFromDataChange={(statement: boolean) => props.onRestructureFromDataChange?.(msg, statement)}
                 isRestructureToData={props.restructureToData === msg}
+                trigger={msg.npcMessageData!.trigger}
+                onTriggerChange={(value: string) => onTriggerValueChange(value, msgIndx)}
               />
             }
             {selectedOption?.fork &&
