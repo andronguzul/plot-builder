@@ -11,9 +11,10 @@ export interface MessagesProps {
   clickedMsg?: IMessageDataType;
   restructurePhase: number;
   restructureFromData: IMessage[];
-  restructureToData?: IMessage;
+  restructureToData?: IPlayerMessageData;
   onRestructureFromDataChange?: Function;
   onRestructureToDataChange?: Function;
+  onFork: Function;
 }
 
 export const Messages = (props: MessagesProps) => {
@@ -106,25 +107,25 @@ export const Messages = (props: MessagesProps) => {
                   isSelected={dataItem.selected}
                   dataItemIndx={dataItemIndx}
                   dataItemsLength={msg.playerMessageData!.length}
-                  onClick={() => props.restructurePhase === 2 ? props.onRestructureToDataChange?.(msg) : props.onClick(dataItem)}
+                  onClick={() => props.restructurePhase === 2 ? props.onRestructureToDataChange?.(msg, dataItemIndx) : props.onClick(dataItem)}
                   thisClicked={dataItem === props.clickedMsg}
                   someClicked={someOptionClicked}
                   onAddDataItem={() => onAdd(msgIndx, dataItemIndx)}
                   onAddMessage={() => onAdd(msgIndx)}
                   onRemove={() => {}}
-                  onFork={() => {}}
+                  onFork={() => props.onFork(dataItem)}
                   restructurePhase={props.restructurePhase}
                   existsInRestructureFromData={existsInRestructureFromData}
                   restructureFromDataCanBeChanged={restructureFromDataCanBeChanged}
                   onRestructureFromDataChange={(statement: boolean) => props.onRestructureFromDataChange?.(msg, statement)}
-                  isRestructureToData={props.restructureToData === msg}
+                  isRestructureToData={props.restructureToData === dataItem}
                 />
               ) :
               <Message
                 author={msg.npcMessageData!.author}
                 text={msg.npcMessageData!.text}
                 onEdit={() => onEdit(msgIndx)}
-                onClick={() => props.restructurePhase === 2 ? props.onRestructureToDataChange?.(msg) : props.onClick(msg.npcMessageData)}
+                onClick={() => props.onClick(msg.npcMessageData)}
                 thisClicked={msg === props.clickedMsg}
                 onAddMessage={() => onAdd(msgIndx)}
                 onRemove={() => {}}
@@ -147,6 +148,7 @@ export const Messages = (props: MessagesProps) => {
                 restructureToData={props.restructureToData}
                 onRestructureFromDataChange={props.onRestructureFromDataChange}
                 onRestructureToDataChange={props.onRestructureToDataChange}
+                onFork={props.onFork}
               />
             }
           </React.Fragment>

@@ -51,7 +51,7 @@ export const Message = (props: MessageProps) => {
   };
 
   return (
-    <div className={`message-container ${playerSuffix} ${restructureToDataSuffix} ${dataItemSuffix}`}>
+    <div className={`message-container ${playerSuffix} ${dataItemSuffix}`}>
       {props.restructurePhase === 1 ?
         (!isPlayerMessage || props.dataItemIndx === 0) &&
         <Input
@@ -69,7 +69,7 @@ export const Message = (props: MessageProps) => {
           <div className='add-button' onClick={() => props.onAddMessage()}>＋</div>
         </div>
       }
-      <div className={`message ${playerSuffix} ${dataItemSuffix}`} onClick={onClickMessage}>
+      <div className={`message ${playerSuffix} ${restructureToDataSuffix} ${dataItemSuffix}`} onClick={onClickMessage}>
         <div className='message-author'>{props.author}</div>
         <div className={`message-text ${props.text ? '' : 'empty'}`}>{props.text || 'Write a message...'}</div>
       </div>

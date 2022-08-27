@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button, ButtonGroup } from 'reactstrap';
 import { IMessage, IMessageDataType, INpcMessageData, IPlayerMessageData, PLAYER } from '../../types';
-import { equalizeHierarchyLevel, getMessageParent, getMsgIndxOnMsgLevel, updateMessageByTagAndRemoveTag } from '../../utils';
+import { equalizeHierarchyLevel, getMessageParent, getMsgIndxOnMsgLevel, messageExists, restructureMessages, updateFork, updateMessageByTagAndRemoveTag } from '../../utils';
 import { ChatInput } from './ChatInput';
 import { Messages } from './Messages';
 
@@ -15,16 +15,23 @@ export const Chat = (props: ChatProps) => {
   const [clickedMessage, setClickedMessage] = useState<IMessageDataType | undefined>();
   const [restructurePhase, setRestructurePhase] = useState<number>(0);
   const [restructureFromData, setRestructureFromData] = useState<IMessage[]>([]);
-  const [restructureToData, setRestructureToData] = useState<IMessage | undefined>();
+  const [restructureToData, setRestructureToData] = useState<IPlayerMessageData | undefined>();
+  const [currentFork, setCurrentFork] = useState<IPlayerMessageData | undefined>();
+
+  const messages = (currentFork && (currentFork.fork || [])) || props.messages;
+
+  const getMessages = (messages: IMessage[]) => {
+    if (!currentFork) return messages;
+    return updateFork(props.messages, currentFork, messages);
+  };
 
   const onSubmit = (msg: IMessageDataType) => {
     if (editMsg) {
-      const updatedMessages = updateMessageByTagAndRemoveTag(props.messages, msg, 'isEditing');
-      props.onChangeMessages(updatedMessages);
+      const updatedMessages = updateMessageByTagAndRemoveTag(messages, msg, 'isEditing');
+      props.onChangeMessages(getMessages(updatedMessages));
       setEditMsg(undefined);
-      console.log(updatedMessages);
     } else {
-      const messagesToMutate = [...props.messages];
+      const messagesToMutate = [...messages];
       if (msg.author === PLAYER) {
         messagesToMutate.push({
           playerMessageData: [msg as IPlayerMessageData],
@@ -34,19 +41,19 @@ export const Chat = (props: ChatProps) => {
           npcMessageData: msg as INpcMessageData,
         });
       }
-      props.onChangeMessages(messagesToMutate);
+      props.onChangeMessages(getMessages(messagesToMutate));
     }
   };
 
   const onChangeMessages = (messages: IMessage[]) => {
     setClickedMessage(undefined);
-    props.onChangeMessages(messages);
+    props.onChangeMessages(getMessages(messages));
   };
 
   const onEditMessage = (message: IMessageDataType, messages: IMessage[]) => {
     setClickedMessage(undefined);
     setEditMsg(message);
-    props.onChangeMessages(messages);
+    props.onChangeMessages(getMessages(messages));
   };
 
   const onClickMessage = (message: IMessageDataType) => {
@@ -85,8 +92,10 @@ export const Chat = (props: ChatProps) => {
     }
   };
 
-  const onRestructureToDataChange = (msg: IMessage) => {
-    setRestructureToData(msg);
+  const onRestructureToDataChange = (msg: IMessage, dataItemIndx: number) => {
+    if (!msg.playerMessageData) return;
+    if (messageExists(restructureFromData, msg)) return;
+    setRestructureToData(msg.playerMessageData[dataItemIndx]);
   }
 
   const onRestructureCancel = () => {
@@ -103,7 +112,8 @@ export const Chat = (props: ChatProps) => {
     setRestructurePhase(0);
     setRestructureFromData([]);
     setRestructureToData(undefined);
-    console.log(restructureFromData, restructureToData);
+    const messages = restructureMessages(props.messages, restructureFromData, restructureToData);
+    props.onChangeMessages(messages);
   };
 
   const renderRestructureActions = () => {
@@ -127,14 +137,21 @@ export const Chat = (props: ChatProps) => {
     }
   };
 
+  const onFork = (dataItem: IPlayerMessageData) => {
+    setCurrentFork(dataItem);
+  }
+
   return (
     <div className='chat'>
-      <div className='chat-header'>
-        {renderRestructureActions()}
+      <div className={`chat-header ${!currentFork ? 'right' : ''}`}>
+        {currentFork ?
+          <Button onClick={() => setCurrentFork(undefined)}>Back</Button> :
+          renderRestructureActions()
+        }
       </div>
       <div className='messages'>
         <Messages
-          data={props.messages}
+          data={messages}
           onChangeMessages={onChangeMessages}
           onEditMessage={onEditMessage}
           onClick={onClickMessage}
@@ -144,6 +161,7 @@ export const Chat = (props: ChatProps) => {
           restructureToData={restructureToData}
           onRestructureFromDataChange={onRestructureFromDataChange}
           onRestructureToDataChange={onRestructureToDataChange}
+          onFork={onFork}
         />
       </div>
       <ChatInput

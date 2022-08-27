@@ -1,11 +1,16 @@
 .chat-page {
   .chat {
     margin-top: 50px;
+
     .chat-header {
       padding: 10px;
-      display: flex;
-      justify-content: flex-end;
+
+      &.right {
+        display: flex;
+        justify-content: flex-end;
+      }
     }
+
     .messages {
       margin-bottom: 110px;
       padding-top: 10px;
@@ -45,6 +50,7 @@
           background-color: #252525;
           min-width: 300px;
           width: fit-content(20em);
+          max-width: 700px;
           cursor: pointer;
 
           .message-author {
@@ -53,6 +59,8 @@
           }
 
           .message-text {
+            white-space: pre-wrap;
+            overflow-wrap: break-word;
             &.empty {
               font-style: italic;
               color: rgb(207, 207, 207);
@@ -61,6 +69,11 @@
 
           &:hover {
             background-color: #282727;
+          }
+
+          &.restructure-to-data {
+            border: 2px solid white;
+            border-radius: 10px;
           }
 
           &.player {
@@ -86,14 +99,28 @@
                 }
               }
 
+              &.restructure-to-data {
+                border-radius: 0;
+              }
+
               &.first {
                 border-top-left-radius: 10px;
                 border-top-right-radius: 10px;
+
+                &.restructure-to-data {
+                  border-top-left-radius: 10px;
+                  border-top-right-radius: 10px;
+                }
               }
 
               &.last {
                 border-bottom-left-radius: 10px;
                 border-bottom-right-radius: 10px;
+
+                &.restructure-to-data {
+                  border-bottom-left-radius: 10px;
+                  border-bottom-right-radius: 10px;
+                }
               }
             }
 
@@ -101,11 +128,6 @@
               background-color: #b65500;
             }
           }
-        }
-
-        &.restructure-to-data {
-          border: 2px solid white;
-          border-radius: 10px;
         }
 
         &.player {
@@ -131,31 +153,12 @@
             margin-top: 0;
             margin-bottom: 0;
 
-            &.restructure-to-data {
-              border: 0;
-              border-radius: 0;
-              border-left: 2px solid white;
-              border-right: 2px solid white;
-            }
-
             &.first {
               margin-top: 10px;
-
-              &.restructure-to-data {
-                border-top-left-radius: 10px;
-                border-top-right-radius: 10px;
-                border-top: 2px solid white;
-              }
             }
 
             &.last {
               margin-bottom: 10px;
-
-              &.restructure-to-data {
-                border-bottom-left-radius: 10px;
-                border-bottom-right-radius: 10px;
-                border-bottom: 2px solid white;
-              }
             }
           }
         }

@@ -159,3 +159,88 @@ export function getMessageParent(messages: IMessage[], searchingMessage: IMessag
   }
   return result;
 }
+
+export function restructureMessages(messages: IMessage[], group: IMessage[], target?: IPlayerMessageData): IMessage[] {
+  let messagesToMutate = [...messages];
+  let rootParentIndx = getRootParentIndex(messages, group);
+
+  messagesToMutate = removeMessagesFromChildren(messagesToMutate, group);
+
+  messagesToMutate = target ?
+    insertMessagesToTarget(messagesToMutate, group, target) :
+    insertMessagesToRoot(messagesToMutate, group, rootParentIndx);
+
+  return messagesToMutate;
+}
+
+export function getRootParentIndex(messages: IMessage[], group: IMessage[]): number {
+  const groupLevel = calculateHierarchyLevel(messages, group[0]);
+  const rootParent = getMessageParent(messages, group[0], groupLevel);
+  return messages.indexOf(rootParent);
+}
+
+export function removeMessagesFromChildren(messages: IMessage[], group: IMessage[]): IMessage[] {
+  const messagesToMutate = [...messages];
+  if (messagesToMutate.includes(group[0])) {
+    messagesToMutate.splice(messagesToMutate.indexOf(group[0]), group.length);
+  } else {
+    for (const message of messagesToMutate) {
+      if (!message.playerMessageData) continue;
+      for (const dataItem of message.playerMessageData) {
+        if (dataItem.fork) {
+          if (dataItem.fork.includes(group[0])) {
+            dataItem.fork.splice(dataItem.fork.indexOf(group[0]), group.length);
+          } else {
+            dataItem.fork = removeMessagesFromChildren(dataItem.fork, group);
+          }
+        }
+      }
+    }
+  }
+  return messagesToMutate;
+}
+
+export function insertMessagesToTarget(messages: IMessage[], group: IMessage[], target: IPlayerMessageData): IMessage[] {
+  const messagesToMutate = [...messages];
+  for (const mi in messagesToMutate) {
+    const msgIndx = parseInt(mi);
+    if (!messagesToMutate[msgIndx].playerMessageData) continue;
+    for (const di in messagesToMutate[msgIndx].playerMessageData) {
+      const dataItemIndx = parseInt(di);
+      const dataItem = messagesToMutate[msgIndx].playerMessageData?.[dataItemIndx];
+      if (dataItem === target) {
+        if (!dataItem.fork) {
+          messagesToMutate[msgIndx].playerMessageData![dataItemIndx].fork = group;
+        } else {
+          messagesToMutate[msgIndx].playerMessageData![dataItemIndx].fork!.push(...group);
+        }
+        break;
+      } else {
+        if (dataItem?.fork) {
+          messagesToMutate[msgIndx].playerMessageData![dataItemIndx].fork = insertMessagesToTarget(dataItem?.fork, group, target);
+        }
+      }
+    }
+  }
+  return messagesToMutate;
+}
+
+export function insertMessagesToRoot(messages: IMessage[], group: IMessage[], rootParentIndx: number): IMessage[] {
+  const messagesToMutate = [...messages];
+  messagesToMutate.splice(rootParentIndx + 1, 0, ...group);
+  return messagesToMutate;
+}
+
+export function updateFork(messages: IMessage[], messageToUpdate: IPlayerMessageData, fork: IMessage[]): IMessage[] {
+  const messagesToMutate = [...messages];
+  for (const message of messagesToMutate) {
+    if (!message.playerMessageData) continue;
+    for (const dataItem of message.playerMessageData) {
+      if (dataItem === messageToUpdate) dataItem.fork = fork;
+      else if (dataItem.fork) {
+        dataItem.fork = updateFork(dataItem.fork, messageToUpdate, fork);
+      }
+    }
+  }
+  return messagesToMutate;
+}

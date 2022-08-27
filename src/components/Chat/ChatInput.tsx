@@ -55,7 +55,6 @@ export const ChatInput = (props: ChatInputProps) => {
     setMessage('');
     setFilename('');
     setFileMeta('');
-    switchAuthour();
 
     if (activeTab === tabs[0]) {
       props.onSubmit({
