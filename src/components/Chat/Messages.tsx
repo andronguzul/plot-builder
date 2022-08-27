@@ -61,17 +61,42 @@ export const Messages = (props: MessagesProps) => {
       messageToMutate.playerMessageData!.push(msg);
       props.onEditMessage(msg, messagesToMutate);
     } else {
-      const msg: INpcMessageData = {
-        author: messagesToMutate[msgIndx].npcMessageData!.author,
-        text: '',
-        isEditing: true,
-        type: MessageType.Text,
-      };
-      messagesToMutate.splice(msgIndx + 1, 0, {
-        npcMessageData: msg
-      });
-      props.onEditMessage(msg, messagesToMutate);
+      const previousMsg = messagesToMutate[msgIndx];
+      if (previousMsg.npcMessageData) {
+        const msg: INpcMessageData = {
+          author: previousMsg.npcMessageData.author,
+          text: '',
+          isEditing: true,
+          type: MessageType.Text,
+        };
+        messagesToMutate.splice(msgIndx + 1, 0, {
+          npcMessageData: msg
+        });
+        props.onEditMessage(msg, messagesToMutate);
+      } else {
+        const msg: IPlayerMessageData = {
+          author: PLAYER,
+          text: '',
+          isEditing: true,
+          type: MessageType.Text,
+          selected: true,
+        };
+        messagesToMutate.splice(msgIndx + 1, 0, {
+          playerMessageData: [msg]
+        });
+        props.onEditMessage(msg, messagesToMutate);
+      }
     }
+  };
+
+  const onRemove = (msgIndx: number, dataItemIndx?: number) => {
+    const messagesToMutate = [...props.data];
+    if (dataItemIndx !== undefined) {
+      messagesToMutate[msgIndx].playerMessageData?.splice(dataItemIndx, 1);
+    } else {
+      messagesToMutate.splice(msgIndx, 1);
+    }
+    props.onChangeMessages(messagesToMutate);
   };
 
   const onForkChangeMessages = (fork: IMessage[], msgIndx: number, dataItemIndx: number) => {
@@ -112,7 +137,7 @@ export const Messages = (props: MessagesProps) => {
                   someClicked={someOptionClicked}
                   onAddDataItem={() => onAdd(msgIndx, dataItemIndx)}
                   onAddMessage={() => onAdd(msgIndx)}
-                  onRemove={() => {}}
+                  onRemove={() => onRemove(msgIndx, dataItemIndx)}
                   onFork={() => props.onFork(dataItem)}
                   restructurePhase={props.restructurePhase}
                   existsInRestructureFromData={existsInRestructureFromData}
@@ -126,9 +151,9 @@ export const Messages = (props: MessagesProps) => {
                 text={msg.npcMessageData!.text}
                 onEdit={() => onEdit(msgIndx)}
                 onClick={() => props.onClick(msg.npcMessageData)}
-                thisClicked={msg === props.clickedMsg}
+                thisClicked={msg.npcMessageData === props.clickedMsg}
                 onAddMessage={() => onAdd(msgIndx)}
-                onRemove={() => {}}
+                onRemove={() => onRemove(msgIndx)}
                 restructurePhase={props.restructurePhase}
                 existsInRestructureFromData={existsInRestructureFromData}
                 restructureFromDataCanBeChanged={restructureFromDataCanBeChanged}

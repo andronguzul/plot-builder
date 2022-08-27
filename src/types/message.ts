@@ -12,6 +12,7 @@ export interface IMessageData {
   file_meta?: string;
   text?: string;
   isEditing?: boolean;
+  trigger?: string;
 }
 
 export interface INpcMessageData extends IMessageData { }

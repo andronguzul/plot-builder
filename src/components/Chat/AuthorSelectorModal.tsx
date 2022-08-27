@@ -15,11 +15,11 @@ export const AuthorSelectorModal = (props: AuthorSelectorModalProps) => {
 
   return (
     <Modal
-      toggle={() => props.onClose}
+      toggle={() => props.onClose()}
       isOpen={props.open}
       className='member-selector-modal'
     >
-      <ModalHeader toggle={() => props.onClose}>
+      <ModalHeader toggle={() => props.onClose()}>
         Members
       </ModalHeader>
       <ModalBody>

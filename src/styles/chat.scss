@@ -221,6 +221,13 @@
       &:hover {
         color: grey;
       }
+
+      &.disabled {
+        cursor: default;
+        &:hover {
+          color: white;
+        }
+      }
     }
   }
 
