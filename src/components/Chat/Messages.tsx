@@ -2,6 +2,7 @@ import React from 'react';
 import { IMessage, IMessageDataType, INpcMessageData, IPlayerMessageData, MessageType, PLAYER } from '../../types';
 import { messageExists, removeField } from '../../utils';
 import { Message } from './Message';
+import { PlayerMessages } from './PlayerMessages';
 
 export interface MessagesProps {
   data: IMessage[];
@@ -135,34 +136,25 @@ export const Messages = (props: MessagesProps) => {
         return (
           <React.Fragment key={msgIndx}>
             {msg.playerMessageData ?
-              <div className='player-messages-container'>
-                {msg.playerMessageData.map((dataItem, dataItemIndx) =>
-                  <Message
-                    key={dataItemIndx}
-                    text={dataItem.text}
-                    author={dataItem.author}
-                    onEdit={() => onEdit(msgIndx, dataItemIndx)}
-                    onSelectDataItem={() => onSelectMessage(msgIndx, dataItemIndx)}
-                    isSelected={dataItem.selected}
-                    dataItemIndx={dataItemIndx}
-                    dataItemsLength={msg.playerMessageData!.length}
-                    onClick={() => props.restructurePhase === 2 ? props.onRestructureToDataChange?.(msg, dataItemIndx) : props.onClick(dataItem)}
-                    thisClicked={dataItem === props.clickedMsg}
-                    someClicked={someOptionClicked}
-                    onAddDataItem={() => onAdd(msgIndx, dataItemIndx)}
-                    onAddMessage={() => onAdd(msgIndx)}
-                    onRemove={() => onRemove(msgIndx, dataItemIndx)}
-                    onFork={() => props.onFork(dataItem)}
-                    restructurePhase={props.restructurePhase}
-                    existsInRestructureFromData={existsInRestructureFromData}
-                    restructureFromDataCanBeChanged={restructureFromDataCanBeChanged}
-                    onRestructureFromDataChange={(statement: boolean) => props.onRestructureFromDataChange?.(msg, statement)}
-                    isRestructureToData={props.restructureToData === dataItem}
-                    trigger={dataItem.trigger}
-                    onTriggerChange={(value: string) => onTriggerValueChange(value, msgIndx, dataItemIndx)}
-                  />
-                )}
-              </div> :
+              <PlayerMessages
+                msg={msg}
+                msgIndx={msgIndx}
+                onEdit={onEdit}
+                onSelectMessage={onSelectMessage}
+                restructurePhase={props.restructurePhase}
+                onRestructureToDataChange={props.onRestructureToDataChange}
+                onClick={props.onClick}
+                clickedMsg={props.clickedMsg}
+                someClicked={someOptionClicked}
+                onAdd={onAdd}
+                onRemove={onRemove}
+                onFork={props.onFork}
+                existsInRestructureFromData={existsInRestructureFromData}
+                restructureFromDataCanBeChanged={restructureFromDataCanBeChanged}
+                onRestructureFromDataChange={props.onRestructureFromDataChange}
+                restructureToData={props.restructureToData}
+                onTriggerChange={onTriggerValueChange}
+              /> :
               <Message
                 author={msg.npcMessageData!.author}
                 text={msg.npcMessageData!.text}

@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useRef } from 'react';
 import { useState } from 'react';
 import { Button, ButtonGroup, Input } from 'reactstrap';
 import { PLAYER } from '../../types';
@@ -25,18 +26,28 @@ export interface MessageProps {
   isRestructureToData: boolean;
   trigger?: string;
   onTriggerChange: Function;
+  longestMessage?: React.RefObject<HTMLDivElement>;
+  isTheLongestMessage?: boolean;
+  onMessageDivLengthChange?: Function;
 }
 
 export const Message = (props: MessageProps) => {
   const [triggerActionClicked, setTriggerActionClicked] = useState(false);
   const [triggerValue, setTriggerValue] = useState('');
 
+  const messageRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (props.trigger) setTriggerValue(props.trigger);
   }, [props.trigger]);
 
+  useEffect(() => {
+    if (props.dataItemsLength && props.dataItemsLength > 1) {
+      props.onMessageDivLengthChange?.(messageRef, props.text);
+    }
+  }, [props.text]);
+
   const isPlayerMessage = props.author === PLAYER;
-  const playerSuffix = isPlayerMessage ? 'player' : '';
   let dataItemSuffix = '';
   if (isPlayerMessage) {
     const listSuffix = props.dataItemsLength ? 'list' : '';
@@ -67,7 +78,7 @@ export const Message = (props: MessageProps) => {
   };
 
   return (
-    <div className={`message-container ${playerSuffix} ${dataItemSuffix}`}>
+    <div className={`message-container ${dataItemSuffix}`}>
       {props.restructurePhase === 1 ?
         (!isPlayerMessage || props.dataItemIndx === 0) &&
         <Input
@@ -85,7 +96,12 @@ export const Message = (props: MessageProps) => {
           <div className='add-button' onClick={() => props.onAddMessage()}>＋</div>
         </div>
       }
-      <div className={`message ${playerSuffix} ${restructureToDataSuffix} ${dataItemSuffix}`} onClick={onClickMessage}>
+      <div
+        className={`message ${restructureToDataSuffix} ${dataItemSuffix}`}
+        onClick={onClickMessage}
+        ref={messageRef}
+        style={(props.longestMessage && !props.isTheLongestMessage) ? { width: props.longestMessage.current?.getBoundingClientRect().width } : {}}
+      >
         <div className='message-author'>{props.author}</div>
         <div className={`message-text ${props.text ? '' : 'empty'}`}>{props.text || 'Write a message...'}</div>
       </div>
