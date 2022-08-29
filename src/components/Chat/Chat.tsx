@@ -17,6 +17,7 @@ export const Chat = (props: ChatProps) => {
   const [restructurePhase, setRestructurePhase] = useState<number>(0);
   const [restructureFromData, setRestructureFromData] = useState<IMessage[]>([]);
   const [restructureToData, setRestructureToData] = useState<IPlayerMessageData | undefined>();
+  const [forkChain, setForkChain] = useState<IPlayerMessageData[]>([]);
   const [currentFork, setCurrentFork] = useState<IPlayerMessageData | undefined>();
 
   const messages = (currentFork && (currentFork.fork || [])) || props.messages;
@@ -68,12 +69,12 @@ export const Chat = (props: ChatProps) => {
     if (!restructureFromData.length) setRestructureFromData([msg]);
     else if (restructureFromData.length && !checked && msg === restructureFromData[0]) setRestructureFromData([]);
     else {
-      const msgs = equalizeHierarchyLevel(props.messages, restructureFromData[0], msg);
+      const msgs = equalizeHierarchyLevel(messages, restructureFromData[0], msg);
       if (checked) {
-        const msg1Indx = getMsgIndxOnMsgLevel(props.messages, msgs[0]);
-        const msg2Indx = getMsgIndxOnMsgLevel(props.messages, msgs[1]);
-        const parent = getMessageParent(props.messages, msgs[0]);
-        let messagesOnLevel = props.messages;
+        const msg1Indx = getMsgIndxOnMsgLevel(messages, msgs[0]);
+        const msg2Indx = getMsgIndxOnMsgLevel(messages, msgs[1]);
+        const parent = getMessageParent(messages, msgs[0]);
+        let messagesOnLevel = messages;
         if (parent !== msgs[0]) {
           for (const dataItem of parent.playerMessageData!) {
             if (dataItem.fork?.includes(msgs[0])) {
@@ -114,8 +115,8 @@ export const Chat = (props: ChatProps) => {
     setRestructurePhase(0);
     setRestructureFromData([]);
     setRestructureToData(undefined);
-    const messages = restructureMessages(props.messages, restructureFromData, restructureToData);
-    props.onChangeMessages(messages);
+    const messagesToUpdate = restructureMessages(messages, restructureFromData, restructureToData);
+    props.onChangeMessages(getMessages(messagesToUpdate));
   };
 
   const renderRestructureActions = () => {
@@ -140,16 +141,27 @@ export const Chat = (props: ChatProps) => {
   };
 
   const onFork = (dataItem: IPlayerMessageData) => {
+    setForkChain([...forkChain, dataItem]);
     setCurrentFork(dataItem);
-  }
+  };
+
+  const onForkBack = () => {
+    if (!currentFork) return;
+    const currentForkIndx = forkChain.indexOf(currentFork);
+    if (currentForkIndx === 0) {
+      setCurrentFork(undefined);
+      setForkChain([]);
+    } else {
+      setCurrentFork(forkChain[currentForkIndx - 1])
+      setForkChain(forkChain.slice(0, currentForkIndx));
+    }
+  };
 
   return (
     <div className='chat'>
       <div className={`chat-header ${!currentFork ? 'right' : ''}`}>
-        {currentFork ?
-          <Button onClick={() => setCurrentFork(undefined)}>Back</Button> :
-          renderRestructureActions()
-        }
+        {currentFork && <Button onClick={onForkBack}>Back</Button>}
+        {renderRestructureActions()}
       </div>
       <div className='messages'>
         <Messages
