@@ -104,6 +104,7 @@ export const Translations = (props: TranslationsProps) => {
                 {Object.values(Language).filter(x => x !== defaultLanguage).map(lang =>
                   <th key={lang}>
                     <Input
+                      type='textarea'
                       placeholder={`${lang} translation`}
                       value={translations.find(x => x.key === key)?.[lang] || ''}
                       onChange={e => onTranslationChange(e.target.value, key, lang)}

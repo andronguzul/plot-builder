@@ -1,15 +1,17 @@
 import { IMessage, IMessageData, INpcMessageData, IPlayerMessageData } from '../types';
 
-export function getAllMessages(list: IMessage[]): any {
+export function getAllMessages(list: IMessage[]): string[] {
   const res = [];
   for (const message of list) {
     if (message.playerMessageData) {
       for (const dataItem of message.playerMessageData) {
         if (dataItem.text) res.push(dataItem.text);
+        if (dataItem.file_meta) res.push(dataItem.file_meta);
         if (dataItem.fork) res.push(...getAllMessages(dataItem.fork));
       }
     } else if (message.npcMessageData) {
-      res.push(message.npcMessageData.text);
+      if (message.npcMessageData.text) res.push(message.npcMessageData.text);
+      if (message.npcMessageData.file_meta) res.push(message.npcMessageData.file_meta);
     }
   }
   return res;

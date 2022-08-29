@@ -27,7 +27,7 @@ export const ChatPage = () => {
   }, [messages, chatName]);
 
   useEffect(() => {
-    setTranslationKeys(getAllMessages(messages));
+    setTranslationKeys(getAllMessages(messages).filter((v, i, s) => s.indexOf(v) === i));
   }, [messages]);
 
   const onSaveMembers = (list: string[]) => {
