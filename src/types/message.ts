@@ -28,3 +28,8 @@ export interface IMessage {
   npcMessageData?: INpcMessageData;
   playerMessageData?: IPlayerMessageData[];
 }
+
+export interface IChat {
+  triggers: string[];
+  messages: IMessage[];
+}

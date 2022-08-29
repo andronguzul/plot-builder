@@ -6,10 +6,9 @@ import {
   Route,
 } from 'react-router-dom';
 import './styles/index.scss';
-// import Constructor from './pages/Constructor';
-import ChatPage from './pages/Chat';
+import { ChatPage } from './pages/Chat';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById('root')!);
 root.render(
   <React.StrictMode>
     <BrowserRouter>

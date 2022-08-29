@@ -1,7 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Button, Card, Input, Modal, ModalBody, ModalHeader } from 'reactstrap';
 
-function Members(props) {
+export interface MembersProps {
+  members: string[];
+  onClose: Function;
+  onSave: Function;
+  open: boolean
+}
+
+export const Members = (props: MembersProps) => {
   const [members, setMembers] = useState(props.members || []);
 
   useEffect(() => {
@@ -21,13 +28,13 @@ function Members(props) {
     setMembers([...members, '']);
   };
 
-  const onRemoveMember = (indx) => {
+  const onRemoveMember = (indx: number) => {
     const membersToMutate = [...members];
     membersToMutate.splice(indx, 1);
     setMembers(membersToMutate);
   };
 
-  const onEditMember = (e, indx) => {
+  const onEditMember = (e: React.ChangeEvent<HTMLInputElement>, indx: number) => {
     const membersToMutate = [...members];
     membersToMutate[indx] = e.target.value;
     setMembers(membersToMutate);

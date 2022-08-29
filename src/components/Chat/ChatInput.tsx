@@ -165,7 +165,7 @@ export const ChatInput = (props: ChatInputProps) => {
           </div>
         </TabPane>
       </TabContent>
-      {props.members.length &&
+      {!!props.members.length &&
         <AuthorSelectorModal
           open={authorSelectorModalOpened}
           onClose={() => setAuthorSelectorModalOpened(false)}

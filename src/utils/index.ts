@@ -17,14 +17,15 @@ export function getAllMessages(list: IMessage[]): any {
 
 export function validateMessages(messages: IMessage[]): boolean {
   for (const message of messages) {
+    if (!message.playerMessageData && !message.npcMessageData) return false;
     if (message.playerMessageData) {
       for (const dataItem of message.playerMessageData) {
         if (!dataItem.text || !dataItem.type) return false;
         if (!dataItem.fork) continue;
         if (!validateMessages(dataItem.fork)) return false;
       }
-    } else if (message.npcMessageData) {
-      if (!message.npcMessageData.text || !message.npcMessageData.author || !message.npcMessageData.type) return false;
+    } else {
+      if (!message.npcMessageData!.text || !message.npcMessageData!.author || !message.npcMessageData!.type) return false;
     }
   }
   return true;

@@ -4,12 +4,20 @@ import {
   DropdownToggle, Input, Modal, ModalBody,
   ModalHeader, Table
 } from 'reactstrap';
+import { ITranslation, Language } from '../types';
 
-function Translations(props) {
-  const [translations, setTranslations] = useState([]);
-  const [keys, setKeys] = useState([]);
-  const languages = ['uk_UA', 'en', 'ru_RU'];
-  const [defaultLanguage, setDefaultLanguage] = useState(languages[0]);
+export interface TranslationsProps {
+  translations: ITranslation[];
+  keys: string[];
+  open: boolean;
+  onClose: Function;
+  onSave: Function;
+}
+
+export const Translations = (props: TranslationsProps) => {
+  const [translations, setTranslations] = useState<ITranslation[]>([]);
+  const [keys, setKeys] = useState<string[]>([]);
+  const [defaultLanguage, setDefaultLanguage] = useState<Language>(Language.UA);
   const [defaultLanguageOpen, setDefaultLanguageOpen] = useState(false);
 
   useEffect(() => {
@@ -37,17 +45,17 @@ function Translations(props) {
     props.onSave(translationsToMutate);
   };
 
-  const onTranslationChange = (e, key, lang) => {
+  const onTranslationChange = (value: string, key: string, lang: Language) => {
     const translationsToMutate = [...translations];
     const translationToUpdate = translationsToMutate.find(x => x.key === key);
     if (!translationToUpdate) {
       translationsToMutate.push({
         key,
-        [lang]: e.target.value,
+        [lang]: value,
       })
     } else {
       const indx = translationsToMutate.indexOf(translationToUpdate);
-      translationsToMutate[indx][lang] = e.target.value;
+      translationsToMutate[indx][lang] = value;
     }
     setTranslations(translationsToMutate);
   }
@@ -72,7 +80,7 @@ function Translations(props) {
               {defaultLanguage}
             </DropdownToggle>
             <DropdownMenu>
-              {languages.map(language =>
+              {Object.values(Language).map(language =>
                 <DropdownItem key={language} onClick={() => setDefaultLanguage(language)}>
                   {language}
                 </DropdownItem>
@@ -84,7 +92,7 @@ function Translations(props) {
           <thead>
             <tr className='table-headers'>
               <th>key</th>
-              {languages.filter(x => x !== defaultLanguage).map(lang =>
+              {Object.values(Language).filter(x => x !== defaultLanguage).map(lang =>
                 <th key={lang}>{lang}</th>
               )}
             </tr>
@@ -93,12 +101,12 @@ function Translations(props) {
             {keys.map((key, indx) =>
               <tr key={indx}>
                 <th scope='row' className='table-key'>{key}</th>
-                {languages.filter(x => x !== defaultLanguage).map(lang =>
+                {Object.values(Language).filter(x => x !== defaultLanguage).map(lang =>
                   <th key={lang}>
                     <Input
                       placeholder={`${lang} translation`}
                       value={translations.find(x => x.key === key)?.[lang] || ''}
-                      onChange={e => onTranslationChange(e, key, lang)}
+                      onChange={e => onTranslationChange(e.target.value, key, lang)}
                     />
                   </th>
                 )}

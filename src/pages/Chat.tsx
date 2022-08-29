@@ -1,63 +1,47 @@
 import React, { useEffect, useState } from 'react';
-import { Accordion, Button, ButtonGroup, Input } from 'reactstrap';
+import { Button, ButtonGroup, Input } from 'reactstrap';
 import { usePapaParse } from 'react-papaparse';
-import Members from '../components/Constructor/Members';
-import MessageEditor from '../components/Constructor/MessageEditor';
-import { getAllAuthors, getAllMessages, validateMessages } from '../utils.js';
-import Translations from '../components/Constructor/Translations';
+import { getAllAuthors, getAllMessages, validateMessages } from '../utils';
+import { Members } from '../components/Members';
+import { Translations } from '../components/Translations';
+import { Chat } from '../components/Chat/Chat';
+import { IMessage, ITranslation } from '../types';
 
-function Constructor() {
-  const [messages, setMessages] = useState([{}]);
+export const ChatPage = () => {
+  const [messages, setMessages] = useState<IMessage[]>([]);
   const [canDownload, setCanDownload] = useState(true);
-  const [openedMessages, setOpenedMessages] = useState(['0']);
   const [chatName, setChatName] = useState('');
-  const [members, setMembers] = useState([]);
-  const [translations, setTranslations] = useState([]);
+  const [members, setMembers] = useState<string[]>([]);
+  const [translations, setTranslations] = useState<ITranslation[]>([]);
   const [membersOpen, setMembersOpen] = useState(false);
   const [translationsOpen, setTranslationsOpen] = useState(false);
-  const [translationKeys, setTranslationKeys] = useState([]);
+  const [translationKeys, setTranslationKeys] = useState<string[]>([]);
 
-  const hiddenMessagesFileInput = React.useRef(null);
-  const hiddenTranslationsFileInput = React.useRef(null);
+  const hiddenMessagesFileInput = React.useRef<HTMLInputElement>(null);
+  const hiddenTranslationsFileInput = React.useRef<HTMLInputElement>(null);
 
   const csvParser = usePapaParse();
 
   useEffect(() => {
-    setCanDownload(validateMessages(messages) && chatName);
+    setCanDownload(!!chatName && messages.length > 0 && validateMessages(messages));
   }, [messages, chatName]);
 
   useEffect(() => {
     setTranslationKeys(getAllMessages(messages));
   }, [messages]);
 
-  const onToggleAccordion = (targetId) => {
-    const opened = [...openedMessages];
-    if (opened.includes(targetId)) {
-      opened.splice(opened.indexOf(targetId), 1);
-    } else {
-      opened.push(targetId);
-    }
-    setOpenedMessages(opened);
-  };
-
-  const onSubmit = (message, indx) => {
-    const messagesToMutate = [...messages];
-    messagesToMutate[indx] = message;
-    setMessages(messagesToMutate);
-    onToggleAccordion(indx.toString());
-  };
-
-  const onSaveMembers = (list) => {
+  const onSaveMembers = (list: string[]) => {
     setMembers(list);
     setMembersOpen(false);
   };
 
-  const onSaveTranslations = (list) => {
+  const onSaveTranslations = (list: ITranslation[]) => {
     setTranslations(list);
     setTranslationsOpen(false);
   };
 
-  const onImport = (e, cb) => {
+  const onImport = (e: React.ChangeEvent<HTMLInputElement>, cb: Function) => {
+    if (!e.target.files) return;
     const cancel = e.target.files.length !== 1;
     if (cancel) return;
     const fileName = e.target.files[0].name;
@@ -65,7 +49,7 @@ function Constructor() {
     fileReader.readAsText(e.target.files[0], 'UTF-8');
     fileReader.onload = e => {
       try {
-        const data = e.target.result;
+        const data = e.target?.result;
         cb(data, fileName);
       } catch (e) {
         console.log('Invalid file provided', e);
@@ -73,8 +57,8 @@ function Constructor() {
     };
   }
 
-  const onMessagesImport = (e) => {
-    onImport(e, (data, fileName) => {
+  const onMessagesImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onImport(e, (data: string, fileName: string) => {
       const parsed = JSON.parse(data);
       if (!parsed.length || !validateMessages(parsed)) {
         throw new Error();
@@ -85,19 +69,19 @@ function Constructor() {
     });
   };
 
-  const onTranslationsImport = (e) => {
-    onImport(e, (data) => {
+  const onTranslationsImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onImport(e, (data: string) => {
       csvParser.readString(data, {
         worker: true,
         header: true,
         complete: (parsed) => {
-          setTranslations(parsed.data);
+          setTranslations(parsed.data as ITranslation[]);
         },
       })
     });
   };
 
-  const download = async (content, extenstion) => {
+  const download = async (content: any, extenstion: string) => {
     const fileName = chatName;
     const blob = new Blob([content], { type: 'application/json' });
     const href = await URL.createObjectURL(blob);
@@ -117,26 +101,13 @@ function Constructor() {
   }
 
   return (
-    <div className='constructor'>
-      <div>
-        <Accordion open={openedMessages} toggle={onToggleAccordion} className='messages'>
-          {messages.map((message, indx) =>
-            <MessageEditor
-              members={members}
-              key={indx}
-              onSubmit={(message) => onSubmit(message, indx)}
-              data={message}
-              targetId={indx.toString()}
-            />
-          )}
-        </Accordion>
-        <Button className='margined-top' onClick={() => {
-          const messagesToMutate = [...messages];
-          messagesToMutate.push({});
-          setMessages(messagesToMutate);
-        }}>Add</Button>
-      </div>
-      <div className='constructor-actions-left in-row'>
+    <div className='chat-page'>
+      <Chat
+        messages={messages}
+        members={members}
+        onChangeMessages={(data: IMessage[]) => setMessages(data)}
+      />
+      <div className='chat-actions-left in-row'>
         <Input
           placeholder='chat-name'
           value={chatName}
@@ -148,9 +119,9 @@ function Constructor() {
           <Button onClick={() => setTranslationsOpen(true)}>Translations</Button>
         </ButtonGroup>
       </div>
-      <ButtonGroup className='constructor-actions-right'>
-        <Button onClick={() => hiddenMessagesFileInput.current.click()}>Import Messages</Button>
-        <Button onClick={() => hiddenTranslationsFileInput.current.click()}>Import Translations</Button>
+      <ButtonGroup className='chat-actions-right'>
+        <Button onClick={() => hiddenMessagesFileInput.current?.click()}>Import Messages</Button>
+        <Button onClick={() => hiddenTranslationsFileInput.current?.click()}>Import Translations</Button>
         <Button disabled={!canDownload} onClick={onDownload}>Download</Button>
       </ButtonGroup>
       <Members
@@ -183,5 +154,3 @@ function Constructor() {
     </div>
   );
 }
-
-export default Constructor;

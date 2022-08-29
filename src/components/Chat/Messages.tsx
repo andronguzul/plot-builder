@@ -93,6 +93,9 @@ export const Messages = (props: MessagesProps) => {
     const messagesToMutate = [...props.data];
     if (dataItemIndx !== undefined) {
       messagesToMutate[msgIndx].playerMessageData?.splice(dataItemIndx, 1);
+      if (!messagesToMutate[msgIndx].playerMessageData?.length) {
+        messagesToMutate.splice(msgIndx, 1);
+      }
     } else {
       messagesToMutate.splice(msgIndx, 1);
     }
@@ -132,32 +135,34 @@ export const Messages = (props: MessagesProps) => {
         return (
           <React.Fragment key={msgIndx}>
             {msg.playerMessageData ?
-              msg.playerMessageData.map((dataItem, dataItemIndx) =>
-                <Message
-                  key={dataItemIndx}
-                  text={dataItem.text}
-                  author={dataItem.author}
-                  onEdit={() => onEdit(msgIndx, dataItemIndx)}
-                  onSelectDataItem={() => onSelectMessage(msgIndx, dataItemIndx)}
-                  isSelected={dataItem.selected}
-                  dataItemIndx={dataItemIndx}
-                  dataItemsLength={msg.playerMessageData!.length}
-                  onClick={() => props.restructurePhase === 2 ? props.onRestructureToDataChange?.(msg, dataItemIndx) : props.onClick(dataItem)}
-                  thisClicked={dataItem === props.clickedMsg}
-                  someClicked={someOptionClicked}
-                  onAddDataItem={() => onAdd(msgIndx, dataItemIndx)}
-                  onAddMessage={() => onAdd(msgIndx)}
-                  onRemove={() => onRemove(msgIndx, dataItemIndx)}
-                  onFork={() => props.onFork(dataItem)}
-                  restructurePhase={props.restructurePhase}
-                  existsInRestructureFromData={existsInRestructureFromData}
-                  restructureFromDataCanBeChanged={restructureFromDataCanBeChanged}
-                  onRestructureFromDataChange={(statement: boolean) => props.onRestructureFromDataChange?.(msg, statement)}
-                  isRestructureToData={props.restructureToData === dataItem}
-                  trigger={dataItem.trigger}
-                  onTriggerChange={(value: string) => onTriggerValueChange(value, msgIndx, dataItemIndx)}
-                />
-              ) :
+              <div className='player-messages-container'>
+                {msg.playerMessageData.map((dataItem, dataItemIndx) =>
+                  <Message
+                    key={dataItemIndx}
+                    text={dataItem.text}
+                    author={dataItem.author}
+                    onEdit={() => onEdit(msgIndx, dataItemIndx)}
+                    onSelectDataItem={() => onSelectMessage(msgIndx, dataItemIndx)}
+                    isSelected={dataItem.selected}
+                    dataItemIndx={dataItemIndx}
+                    dataItemsLength={msg.playerMessageData!.length}
+                    onClick={() => props.restructurePhase === 2 ? props.onRestructureToDataChange?.(msg, dataItemIndx) : props.onClick(dataItem)}
+                    thisClicked={dataItem === props.clickedMsg}
+                    someClicked={someOptionClicked}
+                    onAddDataItem={() => onAdd(msgIndx, dataItemIndx)}
+                    onAddMessage={() => onAdd(msgIndx)}
+                    onRemove={() => onRemove(msgIndx, dataItemIndx)}
+                    onFork={() => props.onFork(dataItem)}
+                    restructurePhase={props.restructurePhase}
+                    existsInRestructureFromData={existsInRestructureFromData}
+                    restructureFromDataCanBeChanged={restructureFromDataCanBeChanged}
+                    onRestructureFromDataChange={(statement: boolean) => props.onRestructureFromDataChange?.(msg, statement)}
+                    isRestructureToData={props.restructureToData === dataItem}
+                    trigger={dataItem.trigger}
+                    onTriggerChange={(value: string) => onTriggerValueChange(value, msgIndx, dataItemIndx)}
+                  />
+                )}
+              </div> :
               <Message
                 author={msg.npcMessageData!.author}
                 text={msg.npcMessageData!.text}

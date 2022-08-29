@@ -7,6 +7,7 @@ import { Messages } from './Messages';
 
 export interface ChatProps {
   messages: IMessage[];
+  members: string[];
   onChangeMessages: Function;
 }
 
@@ -166,7 +167,7 @@ export const Chat = (props: ChatProps) => {
         />
       </div>
       <ChatInput
-        members={['Joe']}
+        members={props.members}
         onSubmit={onSubmit}
         editMessage={editMsg}
       />
