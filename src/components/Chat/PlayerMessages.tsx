@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useState } from 'react';
 import { IMessage, IMessageDataType, IPlayerMessageData, MessageType } from '../../types';
 import { Message } from './Message';
@@ -27,8 +27,6 @@ export const PlayerMessages = (props: PlayerMessagesProps) => {
   const [longestMsg, setLongestMsg] = useState<React.RefObject<HTMLDivElement> | undefined>();
   const [longestMsgIndx, setLongestMsgIndx] = useState<number | undefined>();
   const [longestMsgLength, setLongestMsgLength] = useState<number>(0);
-
-  
 
   const onMessageLengthChange = (r: React.RefObject<HTMLDivElement>, text: string, msgIndx: number) => {
     if (!longestMsgLength || (longestMsgLength < text.length || (text.length < longestMsgLength && msgIndx === longestMsgIndx))) {
