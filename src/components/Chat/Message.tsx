@@ -2,11 +2,12 @@ import { useEffect } from 'react';
 import { useRef } from 'react';
 import { useState } from 'react';
 import { Button, ButtonGroup, Input } from 'reactstrap';
-import { PLAYER } from '../../types';
+import { MessageType, PLAYER } from '../../types';
 
 export interface MessageProps {
   text?: string;
   author: string;
+  type: MessageType;
   onEdit: Function;
   onSelectDataItem?: Function;
   isSelected?: boolean;
@@ -103,7 +104,9 @@ export const Message = (props: MessageProps) => {
         style={(props.longestMessage && !props.isTheLongestMessage) ? { width: props.longestMessage.current?.getBoundingClientRect().width } : {}}
       >
         <div className='message-author'>{props.author}</div>
-        <div className={`message-text ${props.text ? '' : 'empty'}`}>{props.text || 'Write a message...'}</div>
+        <div
+          className={`message-text ${props.text ? '' : 'empty'} ${props.type === MessageType.File ? 'file' : ''}`}
+        >{props.text || 'Write a message...'}</div>
       </div>
       {!props.restructurePhase && props.thisClicked &&
         <ButtonGroup className='message-actions'>

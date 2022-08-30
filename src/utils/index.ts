@@ -1,4 +1,4 @@
-import { IMessage, IMessageData, INpcMessageData, IPlayerMessageData } from '../types';
+import { IMessage, IMessageData, INpcMessageData, IPlayerMessageData, MessageType } from '../types';
 
 export function getAllMessages(list: IMessage[]): string[] {
   const res = [];
@@ -22,12 +22,21 @@ export function validateMessages(messages: IMessage[]): boolean {
     if (!message.playerMessageData && !message.npcMessageData) return false;
     if (message.playerMessageData) {
       for (const dataItem of message.playerMessageData) {
-        if (!dataItem.text || !dataItem.type) return false;
+        if (!dataItem.type) return false;
+        if (dataItem.type === MessageType.Text) {
+          if (!dataItem.text) return false;
+        } else {
+          if (!dataItem.filename || !dataItem.file_meta) return false;
+        }
         if (!dataItem.fork) continue;
         if (!validateMessages(dataItem.fork)) return false;
       }
     } else {
-      if (!message.npcMessageData!.text || !message.npcMessageData!.author || !message.npcMessageData!.type) return false;
+      if (message.npcMessageData!.type === MessageType.Text) {
+        if (!message.npcMessageData!.text) return false;
+      } else {
+        if (!message.npcMessageData!.filename || !message.npcMessageData!.file_meta) return false;
+      }
     }
   }
   return true;

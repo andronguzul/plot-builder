@@ -157,7 +157,8 @@ export const Messages = (props: MessagesProps) => {
               /> :
               <Message
                 author={msg.npcMessageData!.author}
-                text={msg.npcMessageData!.text}
+                text={msg.npcMessageData!.type === MessageType.Text ? msg.npcMessageData!.text :  msg.npcMessageData!.filename}
+                type={msg.npcMessageData!.type}
                 onEdit={() => onEdit(msgIndx)}
                 onClick={() => props.onClick(msg.npcMessageData)}
                 thisClicked={msg.npcMessageData === props.clickedMsg}

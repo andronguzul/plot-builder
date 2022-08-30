@@ -52,12 +52,16 @@ export const ChatInput = (props: ChatInputProps) => {
   };
 
   const onSubmit = () => {
-    if (!message) return;
+    if (activeTab === tabs[0] && !message) return;
+    if (activeTab === tabs[1] && !filename) return;
     setActiveTab(tabs[0]);
     setMessage('');
     setFilename('');
     setFileMeta('');
     setAuthorSwitchForbidden(false);
+    setIsEnterDown(false);
+    setIsShiftDown(false);
+    setIsCntrlDown(false);
 
     if (activeTab === tabs[0]) {
       props.onSubmit({
@@ -79,18 +83,18 @@ export const ChatInput = (props: ChatInputProps) => {
     }
   };
 
-  const onTextMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onInputChange = (value: string, cb: Function) => {
     if (isEnterDown) {
       if (isShiftDown) {
         if (!message) return;
-        setMessage(e.target.value);
+        cb(value);
       } else {
         onSubmit();
       }
     } else {
-      setMessage(e.target.value);
+      cb(value);
     }
-  }
+  };
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Shift') setIsShiftDown(true);
@@ -138,7 +142,7 @@ export const ChatInput = (props: ChatInputProps) => {
           <Input
             placeholder='Write a message...'
             value={message}
-            onChange={onTextMessageChange}
+            onChange={(e) => onInputChange(e.target.value, setMessage)}
             onKeyDown={onKeyDown}
             onKeyUp={onKeyUp}
             type='textarea'
@@ -151,14 +155,18 @@ export const ChatInput = (props: ChatInputProps) => {
             <Input
               placeholder='Filename'
               value={filename}
-              onChange={e => setFilename(e.target.value)}
+              onChange={(e) => onInputChange(e.target.value, setFilename)}
+              onKeyDown={onKeyDown}
+              onKeyUp={onKeyUp}
               className='file-input filename shadow-none'
               innerRef={fileInputRef}
             />
             <Input
               placeholder='File meta'
               value={fileMeta}
-              onChange={e => setFileMeta(e.target.value)}
+              onChange={(e) => onInputChange(e.target.value, setFileMeta)}
+              onKeyDown={onKeyDown}
+              onKeyUp={onKeyUp}
               type='textarea'
               className='file-input filemeta shadow-none'
             />

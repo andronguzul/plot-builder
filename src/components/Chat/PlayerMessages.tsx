@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useState } from 'react';
-import { IMessage, IMessageDataType, IPlayerMessageData } from '../../types';
+import { IMessage, IMessageDataType, IPlayerMessageData, MessageType } from '../../types';
 import { Message } from './Message';
 
 export interface PlayerMessagesProps {
@@ -43,7 +43,8 @@ export const PlayerMessages = (props: PlayerMessagesProps) => {
       {props.msg.playerMessageData!.map((dataItem, dataItemIndx) =>
         <Message
           key={dataItemIndx}
-          text={dataItem.text}
+          text={dataItem.type === MessageType.Text ? dataItem.text :  dataItem.filename}
+          type={dataItem.type}
           author={dataItem.author}
           onEdit={() => props.onEdit(props.msgIndx, dataItemIndx)}
           onSelectDataItem={() => props.onSelectMessage(props.msgIndx, dataItemIndx)}

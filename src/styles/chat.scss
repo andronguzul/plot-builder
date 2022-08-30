@@ -69,7 +69,12 @@
 
             &.empty {
               font-style: italic;
-              color: rgb(207, 207, 207);
+              color: rgb(233, 233, 233);
+            }
+
+            &.file {
+              font-weight: bold;
+              font-style: italic;
             }
           }
 
@@ -338,5 +343,35 @@
     &:first-child {
       border-top: 0;
     }
+  }
+}
+
+.members {
+  color: black;
+  .member-card {
+    background-color: rgb(233, 233, 233);
+    border: 1px solid grey;
+    padding: 10px;
+  }
+}
+
+.triggers {
+  color: black;
+
+  .trigger-card {
+    background-color: rgb(233, 233, 233);
+    border: 1px solid grey;
+    padding: 10px;
+  }
+}
+
+.translations {
+  color: black;
+  min-width: 800px;
+  .table-headers {
+    text-align: center;
+  }
+  .table-key {
+    padding-top: 15px;
   }
 }

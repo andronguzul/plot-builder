@@ -5,15 +5,18 @@ import { getAllAuthors, getAllMessages, validateMessages } from '../utils';
 import { Members } from '../components/Members';
 import { Translations } from '../components/Translations';
 import { Chat } from '../components/Chat/Chat';
-import { IMessage, ITranslation } from '../types';
+import { IChat, IMessage, ITranslation } from '../types';
+import Triggers from '../components/Triggers';
 
 export const ChatPage = () => {
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [canDownload, setCanDownload] = useState(true);
   const [chatName, setChatName] = useState('');
+  const [triggers, setTriggers] = useState<string[]>([]);
   const [members, setMembers] = useState<string[]>([]);
   const [translations, setTranslations] = useState<ITranslation[]>([]);
   const [membersOpen, setMembersOpen] = useState(false);
+  const [triggersOpen, setTriggersOpen] = useState(false);
   const [translationsOpen, setTranslationsOpen] = useState(false);
   const [translationKeys, setTranslationKeys] = useState<string[]>([]);
 
@@ -33,6 +36,11 @@ export const ChatPage = () => {
   const onSaveMembers = (list: string[]) => {
     setMembers(list);
     setMembersOpen(false);
+  };
+
+  const onSaveTriggers = (list: string[]) => {
+    setTriggers(list);
+    setTriggersOpen(false);
   };
 
   const onSaveTranslations = (list: ITranslation[]) => {
@@ -57,14 +65,15 @@ export const ChatPage = () => {
     };
   }
 
-  const onMessagesImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChatImport = (e: React.ChangeEvent<HTMLInputElement>) => {
     onImport(e, (data: string, fileName: string) => {
-      const parsed = JSON.parse(data);
-      if (!parsed.length || !validateMessages(parsed)) {
+      const parsed: IChat = JSON.parse(data);
+      if (!parsed.messages.length || !validateMessages(parsed.messages)) {
         throw new Error();
       }
-      setMessages(parsed);
-      setMembers(getAllAuthors(parsed));
+      setMessages(parsed.messages);
+      setMembers(getAllAuthors(parsed.messages));
+      setTriggers(parsed.triggers);
       setChatName(fileName.split('.')[0]);
     });
   };
@@ -94,9 +103,13 @@ export const ChatPage = () => {
   };
 
   const onDownload = async () => {
-    const messagesContent = JSON.stringify(messages);
+    const chat: IChat = {
+      triggers,
+      messages,
+    }
+    const chatContent = JSON.stringify(chat);
     const translationsContent = csvParser.jsonToCSV(translations);
-    await download(messagesContent, '.json');
+    await download(chatContent, '.json');
     await download(translationsContent, '.csv');
   }
 
@@ -116,6 +129,7 @@ export const ChatPage = () => {
         />
         <ButtonGroup>
           <Button onClick={() => setMembersOpen(true)}>Members</Button>
+          <Button onClick={() => setTriggersOpen(true)}>Triggers</Button>
           <Button onClick={() => setTranslationsOpen(true)}>Translations</Button>
         </ButtonGroup>
       </div>
@@ -130,6 +144,12 @@ export const ChatPage = () => {
         onClose={() => setMembersOpen(false)}
         onSave={onSaveMembers}
       />
+      <Triggers
+        triggers={triggers}
+        open={triggersOpen}
+        onClose={() => setTriggersOpen(false)}
+        onSave={onSaveTriggers}
+      />
       <Translations
         translations={translations}
         keys={translationKeys}
@@ -140,7 +160,7 @@ export const ChatPage = () => {
       <input
         type='file'
         ref={hiddenMessagesFileInput}
-        onChange={onMessagesImport}
+        onChange={onChatImport}
         className='hidden'
         accept='.json'
       />
