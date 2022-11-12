@@ -1,4 +1,5 @@
 @import './chat.scss';
+@import './audio.scss';
 
 body {
   margin: 0;
@@ -39,6 +40,9 @@ textarea { resize: none; }
 }
 .margined-right {
   margin-right: 10px;
+}
+.margined-left {
+  margin-left: 10px;
 }
 .margined-bottom {
   margin-bottom: 10px;

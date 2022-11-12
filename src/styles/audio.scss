@@ -1,0 +1,39 @@
+.audio-page {
+  padding: 10px;
+  .header {
+    display: flex;
+    justify-content: flex-end;
+  }
+  .content {
+    margin-top: 10px;
+    color: black;
+    .trigger-container {
+      display: flex;
+      justify-content: space-between;
+    }
+    .text-container {
+      margin-top: 10px;
+      display: flex;
+      flex: 1;
+      .lang-container {
+        flex: 1;
+        padding: 10px;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        border-right: 0;
+        box-shadow: none;
+        &:first-child {
+          border-top-left-radius: 0.25rem;
+          border-bottom-left-radius: 0.25rem;
+        }
+        &:last-child {
+          border-top-right-radius: 0.25rem;
+          border-bottom-right-radius: 0.25rem;
+          border-right: 1px solid #ced4da;
+        }
+      }
+    }
+  }
+}

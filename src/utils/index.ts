@@ -57,6 +57,21 @@ export function getAllAuthors(messages: IMessage[]): string[] {
   return authors;
 }
 
+export function getTriggers(messages: IMessage[]): string[] {
+  const triggers: string[] = [];
+  for (const message of messages) {
+    if (message.playerMessageData) {
+      for (const dataItem of message.playerMessageData) {
+        if (dataItem.trigger) triggers.push(dataItem.trigger);
+        if (dataItem.fork) triggers.push(...getTriggers(dataItem.fork));
+      }
+    } else if (message.npcMessageData) {
+      if (message.npcMessageData.trigger) triggers.push(message.npcMessageData.trigger);
+    }
+  }
+  return triggers;
+}
+
 export function removeField(messages: IMessage[], field: keyof IMessageData) {
   const result = [...messages];
   for (const message of result) {
@@ -251,6 +266,20 @@ export function updateFork(messages: IMessage[], messageToUpdate: IPlayerMessage
       if (dataItem === messageToUpdate) dataItem.fork = fork;
       else if (dataItem.fork) {
         dataItem.fork = updateFork(dataItem.fork, messageToUpdate, fork);
+      }
+    }
+  }
+  return messagesToMutate;
+}
+
+export function setSelectedToFalse(messages: IMessage[]): IMessage[] {
+  const messagesToMutate = [...messages];
+  for (const message of messagesToMutate) {
+    if (!message.playerMessageData) continue;
+    for (const dataItem of message.playerMessageData) {
+      dataItem.selected = false;
+      if (dataItem.fork) {
+        dataItem.fork = setSelectedToFalse(dataItem.fork);
       }
     }
   }

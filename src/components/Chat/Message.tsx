@@ -3,6 +3,7 @@ import { useRef } from 'react';
 import { useState } from 'react';
 import { Button, ButtonGroup, Input } from 'reactstrap';
 import { MessageType, PLAYER } from '../../types';
+import { TriggerEditorModal } from './TriggerEditorModal';
 
 export interface MessageProps {
   text?: string;
@@ -33,14 +34,9 @@ export interface MessageProps {
 }
 
 export const Message = (props: MessageProps) => {
-  const [triggerActionClicked, setTriggerActionClicked] = useState(false);
-  const [triggerValue, setTriggerValue] = useState('');
+  const [triggerOpen, setTriggerOpen] = useState(false);
 
   const messageRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (props.trigger) setTriggerValue(props.trigger);
-  }, [props.trigger]);
 
   useEffect(() => {
     if (props.dataItemsLength && props.dataItemsLength > 1) {
@@ -73,68 +69,62 @@ export const Message = (props: MessageProps) => {
     props.onClick();
   };
 
-  const onSubmitTriggerValue = () => {
+  const onSubmitTriggerValue = (triggerValue: string) => {
     props.onTriggerChange(triggerValue);
-    setTriggerActionClicked(false);
+    setTriggerOpen(false);
   };
 
   return (
-    <div className={`message-container ${dataItemSuffix}`}>
-      {props.restructurePhase === 1 ?
-        (!isPlayerMessage || props.dataItemIndx === 0) &&
-        <Input
-          type='checkbox'
-          className='message-checkbox'
-          onChange={(e) => props.onRestructureFromDataChange?.(e.target.checked)}
-          disabled={!props.restructureFromDataCanBeChanged}
-          checked={props.existsInRestructureFromData}
-        /> :
-        props.thisClicked &&
-        <div className='add-actions'>
-          {isPlayerMessage &&
-            <div className='add-button' onClick={() => props.onAddDataItem!()}>﬩</div>
-          }
-          <div className='add-button' onClick={() => props.onAddMessage()}>＋</div>
-        </div>
-      }
-      <div
-        className={`message ${restructureToDataSuffix} ${dataItemSuffix}`}
-        onClick={onClickMessage}
-        ref={messageRef}
-        style={(props.longestMessage && !props.isTheLongestMessage) ? { width: props.longestMessage.current?.getBoundingClientRect().width } : {}}
-      >
-        <div className='message-author'>{props.author}</div>
+    <>
+      <div className={`message-container ${dataItemSuffix}`}>
+        {props.restructurePhase === 1 ?
+          (!isPlayerMessage || props.dataItemIndx === 0) &&
+          <Input
+            type='checkbox'
+            className='message-checkbox'
+            onChange={(e) => props.onRestructureFromDataChange?.(e.target.checked)}
+            disabled={!props.restructureFromDataCanBeChanged}
+            checked={props.existsInRestructureFromData}
+          /> :
+          props.thisClicked &&
+          <div className='add-actions'>
+            {isPlayerMessage &&
+              <div className='add-button' onClick={() => props.onAddDataItem!()}>﬩</div>
+            }
+            <div className='add-button' onClick={() => props.onAddMessage()}>＋</div>
+          </div>
+        }
         <div
-          className={`message-text ${props.text ? '' : 'empty'} ${props.type === MessageType.File ? 'file' : ''}`}
-        >{props.text || 'Write a message...'}</div>
-      </div>
-      {!props.restructurePhase && props.thisClicked &&
-        <ButtonGroup className='message-actions'>
-          <Button onClick={() => props.onEdit()}>Edit</Button>
-          {isPlayerMessage && <Button onClick={() => props.onFork!()}>Fork</Button>}
-          {triggerActionClicked ?
-            <Input
-              className='trigger-input'
-              placeholder='Trigger value'
-              value={triggerValue}
-              onChange={(e) => setTriggerValue(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && onSubmitTriggerValue()}
-            /> :
-            <>
-              <Button onClick={() => setTriggerActionClicked(true)}>{props.trigger ? 'Edit' : 'Add'} Trigger</Button>
-              {props.trigger &&
-                <Button onClick={() => props.onTriggerChange()}>Remove Trigger</Button>
-              }
-            </>
-          }
-          <Button onClick={() => props.onRemove()} color='danger'>Remove</Button>
-        </ButtonGroup>
-      }
-      {props.trigger &&
-        <div className='trigger'>
-          {props.trigger}
+          className={`message ${restructureToDataSuffix} ${dataItemSuffix}`}
+          onClick={onClickMessage}
+          ref={messageRef}
+          style={(props.longestMessage && !props.isTheLongestMessage) ? { width: props.longestMessage.current?.getBoundingClientRect().width } : {}}
+        >
+          <div className='message-author'>{props.author}</div>
+          <div
+            className={`message-text ${props.text ? '' : 'empty'} ${props.type === MessageType.File ? 'file' : ''}`}
+          >{props.text || 'Write a message...'}</div>
         </div>
-      }
-    </div>
+        {!props.restructurePhase && props.thisClicked &&
+          <ButtonGroup className='message-actions'>
+            <Button onClick={() => props.onEdit()}>Edit</Button>
+            {isPlayerMessage && <Button onClick={() => props.onFork!()}>Fork</Button>}
+            <Button onClick={() => setTriggerOpen(true)}>Trigger Editor</Button>
+            <Button onClick={() => props.onRemove()} color='danger'>Remove</Button>
+          </ButtonGroup>
+        }
+        {props.trigger &&
+          <div className='trigger'>
+            {props.trigger}
+          </div>
+        }
+      </div>
+      <TriggerEditorModal
+        open={triggerOpen}
+        onClose={() => setTriggerOpen(false)}
+        onSave={onSubmitTriggerValue}
+        trigger={props.trigger || ''}
+      />
+    </>
   );
 }

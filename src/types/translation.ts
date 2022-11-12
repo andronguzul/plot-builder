@@ -1,8 +1,14 @@
 
 export enum Language {
   EN = 'en',
-  UA = 'uk_UA',
-  RU = 'ru_RU',
+  UA = 'ua',
+  RU = 'ru',
+}
+
+export interface ILanguage {
+  [Language.EN]: string;
+  [Language.UA]: string;
+  [Language.RU]: string;
 }
 
 export interface ITranslation {
@@ -10,4 +16,8 @@ export interface ITranslation {
   [Language.EN]?: string;
   [Language.UA]?: string;
   [Language.RU]?: string;
+}
+
+export interface ILocalization {
+  translations: ITranslation[];
 }

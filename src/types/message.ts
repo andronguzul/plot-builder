@@ -13,6 +13,7 @@ export interface IMessageData {
   text?: string;
   isEditing?: boolean;
   trigger?: string;
+  timeLimitInSeconds?: number;
 }
 
 export interface INpcMessageData extends IMessageData { }
@@ -30,6 +31,6 @@ export interface IMessage {
 }
 
 export interface IChat {
-  triggers: string[];
+  membersAmount: number;
   messages: IMessage[];
 }

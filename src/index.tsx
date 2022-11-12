@@ -7,6 +7,7 @@ import {
 } from 'react-router-dom';
 import './styles/index.scss';
 import { ChatPage } from './pages/Chat';
+import { AudioData } from './pages/AudioData';
 
 const root = ReactDOM.createRoot(document.getElementById('root')!);
 root.render(
@@ -14,8 +15,7 @@ root.render(
     <BrowserRouter>
       <Routes>
         <Route path='/plot-builder' element={<ChatPage />} />
-        {/* <Route path='auth' element={<Auth />} />
-        <Route path='/:id' element={<Constructor />} /> */}
+        <Route path='/audio' element={<AudioData />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

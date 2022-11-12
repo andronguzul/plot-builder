@@ -1,22 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { Button, ButtonGroup, Input } from 'reactstrap';
 import { usePapaParse } from 'react-papaparse';
-import { getAllAuthors, getAllMessages, validateMessages } from '../utils';
+import { getAllAuthors, getAllMessages, removeField, setSelectedToFalse, validateMessages } from '../utils';
 import { Members } from '../components/Members';
 import { Translations } from '../components/Translations';
 import { Chat } from '../components/Chat/Chat';
-import { IChat, IMessage, ITranslation } from '../types';
-import Triggers from '../components/Triggers';
+import { IChat, ILocalization, IMessage, ITranslation } from '../types';
 
 export const ChatPage = () => {
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [canDownload, setCanDownload] = useState(true);
   const [chatName, setChatName] = useState('');
-  const [triggers, setTriggers] = useState<string[]>([]);
   const [members, setMembers] = useState<string[]>([]);
   const [translations, setTranslations] = useState<ITranslation[]>([]);
   const [membersOpen, setMembersOpen] = useState(false);
-  const [triggersOpen, setTriggersOpen] = useState(false);
   const [translationsOpen, setTranslationsOpen] = useState(false);
   const [translationKeys, setTranslationKeys] = useState<string[]>([]);
 
@@ -36,11 +33,6 @@ export const ChatPage = () => {
   const onSaveMembers = (list: string[]) => {
     setMembers(list);
     setMembersOpen(false);
-  };
-
-  const onSaveTriggers = (list: string[]) => {
-    setTriggers(list);
-    setTriggersOpen(false);
   };
 
   const onSaveTranslations = (list: ITranslation[]) => {
@@ -73,20 +65,14 @@ export const ChatPage = () => {
       }
       setMessages(parsed.messages);
       setMembers(getAllAuthors(parsed.messages));
-      setTriggers(parsed.triggers);
       setChatName(fileName.split('.')[0]);
     });
   };
 
   const onTranslationsImport = (e: React.ChangeEvent<HTMLInputElement>) => {
     onImport(e, (data: string) => {
-      csvParser.readString(data, {
-        worker: true,
-        header: true,
-        complete: (parsed) => {
-          setTranslations(parsed.data as ITranslation[]);
-        },
-      })
+      const parsed: ILocalization = JSON.parse(data);
+      setTranslations(parsed.translations);
     });
   };
 
@@ -104,14 +90,14 @@ export const ChatPage = () => {
 
   const onDownload = async () => {
     const chat: IChat = {
-      triggers,
-      messages,
+      membersAmount: members.length,
+      messages: setSelectedToFalse(JSON.parse(JSON.stringify(messages))),
     }
     const chatContent = JSON.stringify(chat);
-    const translationsContent = csvParser.jsonToCSV(translations);
+    const translationsContent = JSON.stringify({ translations });
     await download(chatContent, '.json');
-    await download(translationsContent, '.csv');
-  }
+    await download(translationsContent, '.json');
+  };
 
   return (
     <div className='chat-page'>
@@ -125,11 +111,10 @@ export const ChatPage = () => {
           placeholder='chat-name'
           value={chatName}
           onChange={e => setChatName(e.target.value)}
-          className='chat-name margined-right'
+          className='margined-right'
         />
         <ButtonGroup>
           <Button onClick={() => setMembersOpen(true)}>Members</Button>
-          <Button onClick={() => setTriggersOpen(true)}>Triggers</Button>
           <Button onClick={() => setTranslationsOpen(true)}>Translations</Button>
         </ButtonGroup>
       </div>
@@ -143,12 +128,6 @@ export const ChatPage = () => {
         open={membersOpen}
         onClose={() => setMembersOpen(false)}
         onSave={onSaveMembers}
-      />
-      <Triggers
-        triggers={triggers}
-        open={triggersOpen}
-        onClose={() => setTriggersOpen(false)}
-        onSave={onSaveTriggers}
       />
       <Translations
         translations={translations}
@@ -169,7 +148,7 @@ export const ChatPage = () => {
         ref={hiddenTranslationsFileInput}
         onChange={onTranslationsImport}
         className='hidden'
-        accept='.csv'
+        accept='.json'
       />
     </div>
   );
