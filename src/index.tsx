@@ -12,10 +12,10 @@ import { AudioData } from './pages/AudioData';
 const root = ReactDOM.createRoot(document.getElementById('root')!);
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename='/plot-builder'>
       <Routes>
-        <Route path='/plot-builder' element={<ChatPage />} />
-        <Route path='/plot-builder/audio' element={<AudioData />} />
+        <Route path='/' element={<ChatPage />} />
+        <Route path='/audio' element={<AudioData />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

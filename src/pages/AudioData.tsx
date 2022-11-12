@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Accordion, AccordionBody, AccordionHeader, AccordionItem, Button, ButtonGroup } from 'reactstrap';
 import { TriggerData } from '../components/AudioData/TriggerData';
 import { ILanguage, ILocalization, ITranslation, Language } from '../types';
@@ -20,6 +20,9 @@ export const AudioData = () => {
   const [openedSections, setOpenedSections] = useState<string[]>([]);
   const [openedPlayerThoughts, setOpenedPlayerThoughts] = useState<string[]>([]);
   const [openedRadio, setOpenedRadio] = useState<string[]>([]);
+
+  const hiddenPlayerThoughtsFileInput = useRef<HTMLInputElement>(null);
+  const hiddenRadioFileInput = useRef<HTMLInputElement>(null);
 
   const onToggleAccordion = (id: string) => {
     const dataToMutate = [...openedSections];
@@ -55,6 +58,75 @@ export const AudioData = () => {
       triggerData,
       translations,
     }
+  };
+
+  const onImport = async (e: React.ChangeEvent<HTMLInputElement>): Promise<string[]> => {
+    if (!e.target.files) return [];
+    const cancel = e.target.files.length !== 2;
+    if (cancel) return [];
+    const tasks: Promise<string>[] = [];
+    for (const file of e.target.files) {
+      tasks.push(new Promise((res, rej) => {
+        const fileReader = new FileReader();
+        fileReader.readAsText(file, 'UTF-8');
+        fileReader.onload = e => {
+          try {
+            const loaded = e.target?.result as string;
+            if (loaded) res(loaded);
+            else {
+              console.log('Empty or non-string data');
+            }
+          } catch (e) {
+            console.log('Invalid file provided', e);
+          }
+        };
+      }));
+    }
+    return Promise.all(tasks);
+  }
+
+  const onPlayerThoughtsImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const data: string[] = await onImport(e);
+    if (!data.length) return;
+    const unknownParsed = JSON.parse(data[0]);
+    const triggerDataIndx = unknownParsed.playerThoughts ? 0 : 1;
+    const translationIndx = unknownParsed.translations ? 0 : 1;
+
+    const triggerData: IPlayerThoughtsFile = JSON.parse(data[triggerDataIndx]);
+    const translationsData: ILocalization = JSON.parse(data[translationIndx]);
+
+    const playerThoughtsData: IPlayerThoughtsData[] = triggerData.playerThoughts.map(item => {
+      const translation = translationsData.translations.find(x => x.key === item.text);
+      return {
+        trigger: item.trigger,
+        en: translation?.en || '',
+        ua: translation?.ua || '',
+        ru: translation?.ru || '',
+      };
+    });
+    setPlayerThoughts(playerThoughtsData);
+  };
+
+  const onRadioImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const data = await onImport(e);
+    const unknownParsed = JSON.parse(data[0]);
+    const triggerDataIndx = unknownParsed.radio ? 0 : 1;
+    const translationIndx = unknownParsed.translations ? 0 : 1;
+
+    const triggerData: IRadioFile = JSON.parse(data[triggerDataIndx]);
+    const translationsData: ILocalization = JSON.parse(data[translationIndx]);
+
+    const radioData: IRadioData[] = triggerData.radio.map(item => {
+      const translation = translationsData.translations.find(x => x.key === item.text);
+      return {
+        trigger: item.trigger,
+        clipName: item.clipName,
+        en: translation?.en || '',
+        ua: translation?.ua || '',
+        ru: translation?.ru || '',
+      };
+    });
+    setRadio(radioData);
   };
 
   const download = async (fileName: string, content: any, extenstion: string) => {
@@ -97,8 +169,8 @@ export const AudioData = () => {
     <div className='audio-page'>
       <div className='header'>
         <ButtonGroup>
-          <Button>Import player thoughts</Button>
-          <Button>Import radio</Button>
+          <Button onClick={() => hiddenPlayerThoughtsFileInput.current?.click()}>Import player thoughts</Button>
+          <Button onClick={() => hiddenRadioFileInput.current?.click()}>Import radio</Button>
           <Button onClick={onDownload}>Download</Button>
         </ButtonGroup>
       </div>
@@ -141,6 +213,22 @@ export const AudioData = () => {
           </AccordionItem>
         </Accordion>
       </div>
+      <input
+        type='file'
+        ref={hiddenPlayerThoughtsFileInput}
+        onChange={onPlayerThoughtsImport}
+        className='hidden'
+        accept='.json'
+        multiple
+      />
+      <input
+        type='file'
+        ref={hiddenRadioFileInput}
+        onChange={onRadioImport}
+        className='hidden'
+        accept='.json'
+        multiple
+      />
     </div>
   );
 };

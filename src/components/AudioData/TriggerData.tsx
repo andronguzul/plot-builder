@@ -68,6 +68,7 @@ export const TriggerData = <T extends IBaseTrigger & ILanguage & Record<keyof T,
               <div className='trigger-container'>
                 {getKeys(item, false).map(key =>
                   <Input
+                    key={key.toString()}
                     placeholder='trigger value'
                     className='margined-right'
                     value={item[key]}
@@ -82,6 +83,7 @@ export const TriggerData = <T extends IBaseTrigger & ILanguage & Record<keyof T,
               <div className='text-container'>
                 {getKeys(item, true).map(key =>
                   <Input
+                    key={key.toString()}
                     type='textarea'
                     placeholder={`${key.toString()} info`}
                     value={item[key]}
