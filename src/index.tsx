@@ -15,7 +15,7 @@ root.render(
     <BrowserRouter>
       <Routes>
         <Route path='/plot-builder' element={<ChatPage />} />
-        <Route path='/audio' element={<AudioData />} />
+        <Route path='/plot-builder/audio' element={<AudioData />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
