@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Accordion, AccordionBody, AccordionHeader, AccordionItem, Button, ButtonGroup } from 'reactstrap';
 import { TriggerData } from '../components/AudioData/TriggerData';
 import { ILanguage, ILocalization, ITranslation, Language } from '../types';
@@ -15,6 +16,7 @@ interface ITriggerData {
 }
 
 export const AudioData = () => {
+  const [, setSearchParams] = useSearchParams();
   const [playerThoughts, setPlayerThoughts] = useState<IPlayerThoughtsData[]>([]);
   const [radio, setRadio] = useState<IRadioData[]>([]);
   const [openedSections, setOpenedSections] = useState<string[]>([]);
@@ -172,6 +174,11 @@ export const AudioData = () => {
           <Button onClick={() => hiddenPlayerThoughtsFileInput.current?.click()}>Import player thoughts</Button>
           <Button onClick={() => hiddenRadioFileInput.current?.click()}>Import radio</Button>
           <Button onClick={onDownload}>Download</Button>
+          <Button onClick={() => {
+            setSearchParams({
+              page: '1',
+            });
+          }}>Chat</Button>
         </ButtonGroup>
       </div>
       <div className='content'>

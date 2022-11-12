@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Button, ButtonGroup, Input } from 'reactstrap';
-import { usePapaParse } from 'react-papaparse';
-import { getAllAuthors, getAllMessages, removeField, setSelectedToFalse, validateMessages } from '../utils';
+import { getAllAuthors, getAllMessages, setSelectedToFalse, validateMessages } from '../utils';
 import { Members } from '../components/Members';
 import { Translations } from '../components/Translations';
 import { Chat } from '../components/Chat/Chat';
 import { IChat, ILocalization, IMessage, ITranslation } from '../types';
+import { useSearchParams } from 'react-router-dom';
 
 export const ChatPage = () => {
+  const [, setSearchParams] = useSearchParams();
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [canDownload, setCanDownload] = useState(true);
   const [chatName, setChatName] = useState('');
@@ -19,8 +20,6 @@ export const ChatPage = () => {
 
   const hiddenMessagesFileInput = React.useRef<HTMLInputElement>(null);
   const hiddenTranslationsFileInput = React.useRef<HTMLInputElement>(null);
-
-  const csvParser = usePapaParse();
 
   useEffect(() => {
     setCanDownload(!!chatName && messages.length > 0 && validateMessages(messages));
@@ -122,6 +121,11 @@ export const ChatPage = () => {
         <Button onClick={() => hiddenMessagesFileInput.current?.click()}>Import Messages</Button>
         <Button onClick={() => hiddenTranslationsFileInput.current?.click()}>Import Translations</Button>
         <Button disabled={!canDownload} onClick={onDownload}>Download</Button>
+        <Button onClick={() => {
+          setSearchParams({
+            page: '2',
+          });
+        }}>Audio</Button>
       </ButtonGroup>
       <Members
         members={members}
