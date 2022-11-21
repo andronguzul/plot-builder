@@ -31,6 +31,8 @@ export interface MessageProps {
   longestMessage?: React.RefObject<HTMLDivElement>;
   isTheLongestMessage?: boolean;
   onMessageDivLengthChange?: Function;
+  forkVisible?: boolean;
+  onSwitchForkVisibility: Function;
 }
 
 export const Message = (props: MessageProps) => {
@@ -110,6 +112,8 @@ export const Message = (props: MessageProps) => {
             <Button onClick={() => props.onEdit()}>Edit</Button>
             {isPlayerMessage && <Button onClick={() => props.onFork!()}>Fork</Button>}
             <Button onClick={() => setTriggerOpen(true)}>Trigger Editor</Button>
+            <Button onClick={() => setTriggerOpen(true)}>Trigger Editor</Button>
+            <Button onClick={() => props.onSwitchForkVisibility()}>{props.forkVisible ? 'Hide' : 'Show'}</Button>
             <Button onClick={() => props.onRemove()} color='danger'>Remove</Button>
           </ButtonGroup>
         }

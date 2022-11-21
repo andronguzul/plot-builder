@@ -21,6 +21,8 @@ export interface PlayerMessagesProps {
   onRestructureFromDataChange?: Function;
   restructureToData?: IPlayerMessageData;
   onTriggerChange: Function;
+  forkVisible?: boolean;
+  onSwitchForkVisibility: Function;
 }
 
 export const PlayerMessages = (props: PlayerMessagesProps) => {
@@ -66,6 +68,8 @@ export const PlayerMessages = (props: PlayerMessagesProps) => {
           longestMessage={longestMsg}
           isTheLongestMessage={longestMsgIndx === dataItemIndx}
           onMessageDivLengthChange={(r: React.RefObject<HTMLDivElement>, text: string) => onMessageLengthChange(r, text, dataItemIndx)}
+          forkVisible={props.forkVisible}
+          onSwitchForkVisibility={props.onSwitchForkVisibility}
         />
       )}
     </div>

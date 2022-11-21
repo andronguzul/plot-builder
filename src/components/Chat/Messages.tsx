@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { IMessage, IMessageDataType, INpcMessageData, IPlayerMessageData, MessageType, PLAYER } from '../../types';
 import { messageExists, removeField } from '../../utils';
 import { Message } from './Message';
@@ -19,6 +19,8 @@ export interface MessagesProps {
 }
 
 export const Messages = (props: MessagesProps) => {
+  const [forkVisible, setForkVisible] = useState(true);
+
   const onSelectMessage = (msgIndx: number, dataItemIndx: number) => {
     const messagesToMutate = [...props.data];
     const messageToMutate = messagesToMutate[msgIndx];
@@ -154,6 +156,8 @@ export const Messages = (props: MessagesProps) => {
                 onRestructureFromDataChange={props.onRestructureFromDataChange}
                 restructureToData={props.restructureToData}
                 onTriggerChange={onTriggerValueChange}
+                forkVisible={forkVisible}
+                onSwitchForkVisibility={() => setForkVisible(!forkVisible)}
               /> :
               <Message
                 author={msg.npcMessageData!.author}
@@ -171,9 +175,11 @@ export const Messages = (props: MessagesProps) => {
                 isRestructureToData={props.restructureToData === msg}
                 trigger={msg.npcMessageData!.trigger}
                 onTriggerChange={(value: string) => onTriggerValueChange(value, msgIndx)}
+                forkVisible={forkVisible}
+                onSwitchForkVisibility={() => setForkVisible(!forkVisible)}
               />
             }
-            {selectedOption?.fork &&
+            {selectedOption?.fork && forkVisible &&
               <Messages
                 data={selectedOption.fork}
                 onChangeMessages={(fork: IMessage[]) => onForkChangeMessages(fork, msgIndx, selectedOptionIndx)}
