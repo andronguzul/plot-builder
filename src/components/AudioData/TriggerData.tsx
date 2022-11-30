@@ -56,7 +56,7 @@ export const TriggerData = <T extends IBaseTrigger & ILanguage & Record<keyof T,
       if (languageKeys) return includes;
       return !includes;
     });
-  }
+  };
 
   return (
     <>
