@@ -37,9 +37,10 @@ export const AudioData = () => {
   };
 
   const getResultData = <T extends IBaseTrigger & ILanguage, TD extends ITriggerData>(data: T[]): IResultData<TD> => {
+    const getKey = (item: T) => item[Object.values(Language).find(key => item[key]) as Language];
     const triggerData: TD[] = data.map(item => {
       const triggerItem: any = {
-        text: item.en,
+        text: getKey(item),
       };
       const keys = (Object.keys(item) as (keyof T)[]).filter(x => !Object.values(Language).includes(x as Language));
       for (const key of keys) {
@@ -49,7 +50,7 @@ export const AudioData = () => {
     })
     const translations: ITranslation[] = data.map(item => {
       const translation: Partial<ITranslation> = {
-        key: item.en,
+        key: getKey(item),
       };
       for (const langKey of Object.values(Language)) {
         translation[langKey] = item[langKey];
