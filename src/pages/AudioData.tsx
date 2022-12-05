@@ -1,7 +1,8 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Accordion, AccordionBody, AccordionHeader, AccordionItem, Button, ButtonGroup } from 'reactstrap';
 import { TriggerData } from '../components/AudioData/TriggerData';
+import { CleanButton } from '../components/CleanButton';
 import { ILanguage, ILocalization, ITranslation, Language } from '../types';
 import { IBaseTrigger, IPlayerThoughts, IPlayerThoughtsData, IPlayerThoughtsFile, IRadio, IRadioData, IRadioFile } from '../types/audio';
 
@@ -22,9 +23,53 @@ export const AudioData = () => {
   const [openedSections, setOpenedSections] = useState<string[]>([]);
   const [openedPlayerThoughts, setOpenedPlayerThoughts] = useState<string[]>([]);
   const [openedRadio, setOpenedRadio] = useState<string[]>([]);
+  const [lastUpdated, setLastUpdated] = useState<Date>();
 
   const hiddenPlayerThoughtsFileInput = useRef<HTMLInputElement>(null);
   const hiddenRadioFileInput = useRef<HTMLInputElement>(null);
+
+  const playerThoughtsRef = useRef<IPlayerThoughtsData[]>();
+  const radioRef = useRef<IRadioData[]>();
+  const openedPlayerThoughtsRef = useRef<string[]>();
+  const openedRadioRef = useRef<string[]>();
+  playerThoughtsRef.current = playerThoughts;
+  radioRef.current = radio;
+  openedPlayerThoughtsRef.current = openedPlayerThoughts;
+  openedRadioRef.current = openedRadio;
+
+  useEffect(() => {
+    const savedPlayerThoughts = localStorage.getItem('playerThoughts');
+    const savedRadio = localStorage.getItem('radio');
+    const savedOpenedPlayerThoughts = localStorage.getItem('openedPlayerThoughts');
+    const savedOpenedRadio = localStorage.getItem('openedRadio');
+    const savedLastUpdated = localStorage.getItem('audioLastUpdated');
+    if (savedPlayerThoughts) setPlayerThoughts(JSON.parse(savedPlayerThoughts));
+    if (savedRadio) setRadio(JSON.parse(savedRadio));
+    if (savedOpenedPlayerThoughts) setOpenedPlayerThoughts(JSON.parse(savedOpenedPlayerThoughts));
+    if (savedOpenedRadio) setOpenedRadio(JSON.parse(savedOpenedRadio));
+    if (savedLastUpdated) setLastUpdated(new Date(savedLastUpdated));
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      updateSavedItem(playerThoughtsRef.current, 'playerThoughts');
+      updateSavedItem(radioRef.current, 'radio');
+      updateSavedItem(openedPlayerThoughtsRef.current, 'openedPlayerThoughts');
+      updateSavedItem(openedRadioRef.current, 'openedRadio');
+    }, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+
+  const updateSavedItem = (currentData: unknown, localStorageKey: string) => {
+    const localStorageData = localStorage.getItem(localStorageKey);
+    if (JSON.stringify(currentData) !== localStorageData) {
+      localStorage.setItem(localStorageKey, JSON.stringify(currentData));
+      const now = new Date();
+      localStorage.setItem('audioLastUpdated', now.toString());
+      setLastUpdated(now);
+    }
+  };
 
   const onToggleAccordion = (id: string) => {
     const dataToMutate = [...openedSections];
@@ -171,9 +216,20 @@ export const AudioData = () => {
   return (
     <div className='audio-page'>
       <div className='header'>
+        <div className='last-updated'>
+          Last updated: {lastUpdated ? lastUpdated.toLocaleString() : 'never'}
+        </div>
         <ButtonGroup>
           <Button onClick={() => hiddenPlayerThoughtsFileInput.current?.click()}>Import player thoughts</Button>
           <Button onClick={() => hiddenRadioFileInput.current?.click()}>Import radio</Button>
+          <CleanButton
+            onClean={() => {
+              setOpenedPlayerThoughts([]);
+              setOpenedRadio([]);
+              setPlayerThoughts([]);
+              setRadio([]);
+            }}
+          />
           <Button onClick={onDownload}>Download</Button>
           <Button onClick={() => {
             setSearchParams({

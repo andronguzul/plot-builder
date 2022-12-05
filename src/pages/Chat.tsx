@@ -6,20 +6,70 @@ import { Translations } from '../components/Translations';
 import { Chat } from '../components/Chat/Chat';
 import { IChat, ILocalization, IMessage, ITranslation } from '../types';
 import { useSearchParams } from 'react-router-dom';
+import { CleanButton } from '../components/CleanButton';
 
 export const ChatPage = () => {
   const [, setSearchParams] = useSearchParams();
   const [messages, setMessages] = useState<IMessage[]>([]);
-  const [canDownload, setCanDownload] = useState(true);
+  const [canDownload, setCanDownload] = useState(false);
   const [chatName, setChatName] = useState('');
   const [members, setMembers] = useState<string[]>([]);
   const [translations, setTranslations] = useState<ITranslation[]>([]);
   const [membersOpen, setMembersOpen] = useState(false);
   const [translationsOpen, setTranslationsOpen] = useState(false);
   const [translationKeys, setTranslationKeys] = useState<string[]>([]);
+  const [lastUpdated, setLastUpdated] = useState<Date>();
 
   const hiddenMessagesFileInput = React.useRef<HTMLInputElement>(null);
   const hiddenTranslationsFileInput = React.useRef<HTMLInputElement>(null);
+
+  const messagesRef = React.useRef<IMessage[]>();
+  const membersRef = React.useRef<string[]>();
+  const translationsRef = React.useRef<ITranslation[]>();
+  const translationKeysRef = React.useRef<string[]>();
+  const chatNameRef = React.useRef<string>();
+  messagesRef.current = messages;
+  membersRef.current = members;
+  translationsRef.current = translations;
+  translationKeysRef.current = translationKeys;
+  chatNameRef.current = chatName;
+
+  useEffect(() => {
+    const savedMessages = localStorage.getItem('messages');
+    const savedMembers = localStorage.getItem('members');
+    const savedTranslations = localStorage.getItem('translations');
+    const savedTranslationKeys = localStorage.getItem('translationKeys');
+    const savedChatName = localStorage.getItem('chatName');
+    const savedLastUpdated = localStorage.getItem('chatLastUpdated');
+    if (savedMessages) setMessages(JSON.parse(savedMessages));
+    if (savedMembers) setMembers(JSON.parse(savedMembers));
+    if (savedTranslations) setTranslations(JSON.parse(savedTranslations));
+    if (savedTranslationKeys) setTranslationKeys(JSON.parse(savedTranslationKeys));
+    if (savedChatName) setChatName(JSON.parse(savedChatName));
+    if (savedLastUpdated) setLastUpdated(new Date(savedLastUpdated));
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      updateSavedItem(messagesRef.current, 'messages');
+      updateSavedItem(membersRef.current, 'members');
+      updateSavedItem(translationsRef.current, 'translations');
+      updateSavedItem(translationKeysRef.current, 'translationKeys');
+      updateSavedItem(chatNameRef.current, 'chatName');
+    }, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const updateSavedItem = (currentData: unknown, localStorageKey: string) => {
+    const localStorageData = localStorage.getItem(localStorageKey);
+    if (JSON.stringify(currentData) !== localStorageData) {
+      localStorage.setItem(localStorageKey, JSON.stringify(currentData));
+      const now = new Date();
+      localStorage.setItem('chatLastUpdated', now.toString());
+      setLastUpdated(now);
+    }
+  };
+
 
   useEffect(() => {
     setCanDownload(!!chatName && messages.length > 0 && validateMessages(messages));
@@ -117,16 +167,31 @@ export const ChatPage = () => {
           <Button onClick={() => setTranslationsOpen(true)}>Translations</Button>
         </ButtonGroup>
       </div>
-      <ButtonGroup className='chat-actions-right'>
-        <Button onClick={() => hiddenMessagesFileInput.current?.click()}>Import Messages</Button>
-        <Button onClick={() => hiddenTranslationsFileInput.current?.click()}>Import Translations</Button>
-        <Button disabled={!canDownload} onClick={onDownload}>Download</Button>
-        <Button onClick={() => {
-          setSearchParams({
-            page: '2',
-          });
-        }}>Audio</Button>
-      </ButtonGroup>
+      <div className='chat-actions-right in-row'>
+        <div className='last-updated'>
+          Last updated: {lastUpdated ? lastUpdated.toLocaleString() : 'never'}
+        </div>
+        <ButtonGroup>
+          <Button onClick={() => hiddenMessagesFileInput.current?.click()}>Import Messages</Button>
+          <Button onClick={() => hiddenTranslationsFileInput.current?.click()}>Import Translations</Button>
+          <CleanButton
+            onClean={() => {
+              setMessages([]);
+              setMembers([]);
+              setTranslations([]);
+              setTranslationKeys([]);
+              setCanDownload(false);
+              setChatName('');
+            }}
+          />
+          <Button disabled={!canDownload} onClick={onDownload}>Download</Button>
+          <Button onClick={() => {
+            setSearchParams({
+              page: '2',
+            });
+          }}>Audio</Button>
+        </ButtonGroup>
+      </div>
       <Members
         members={members}
         open={membersOpen}
