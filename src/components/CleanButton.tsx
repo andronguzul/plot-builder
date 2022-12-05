@@ -19,7 +19,7 @@ export const CleanButton = (props: ICleanButtonProps) => {
         className='close-button-modal'
       >
         <ModalHeader toggle={() => setShowModal(false)}>
-          Members
+          Clean data
         </ModalHeader>
         <ModalBody>
           Are you sure you want to clean the data?
