@@ -86,7 +86,7 @@ export const ChatInput = (props: ChatInputProps) => {
   const onInputChange = (value: string, cb: Function) => {
     if (isEnterDown) {
       if (isShiftDown) {
-        if (!message) return;
+        if (!value.slice(0, -1)) return;
         cb(value);
       } else {
         onSubmit();
