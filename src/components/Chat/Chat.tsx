@@ -4,6 +4,7 @@ import { IMessage, IMessageDataType, INpcMessageData, IPlayerMessageData, PLAYER
 import { equalizeHierarchyLevel, getMessageParent, getMsgIndxOnMsgLevel, messageExists, restructureMessages, updateFork, updateMessageByTagAndRemoveTag } from '../../utils';
 import { ChatInput } from './ChatInput';
 import { Messages } from './Messages';
+import { ParseModal } from './ParseModal';
 
 export interface ChatProps {
   messages: IMessage[];
@@ -19,6 +20,7 @@ export const Chat = (props: ChatProps) => {
   const [restructureToData, setRestructureToData] = useState<IPlayerMessageData | undefined>();
   const [forkChain, setForkChain] = useState<IPlayerMessageData[]>([]);
   const [currentFork, setCurrentFork] = useState<IPlayerMessageData | undefined>();
+  const [parseModalOpen, setParseModalOpen] = useState<boolean>(false);
 
   const messages = (currentFork && (currentFork.fork || [])) || props.messages;
 
@@ -125,17 +127,17 @@ export const Chat = (props: ChatProps) => {
         return <Button onClick={() => setRestructurePhase(restructurePhase + 1)}>Restructure</Button>
       case 1:
         return (
-          <ButtonGroup>
+          <>
             <Button onClick={onRestructureCancel}>Cancel</Button>
             <Button onClick={() => setRestructurePhase(restructurePhase + 1)}>Next</Button>
-          </ButtonGroup>
+          </>
         );
       case 2:
         return (
-          <ButtonGroup>
+          <>
             <Button onClick={onRestructureGoBack}>Back</Button>
             <Button onClick={onRestructureSubmit}>Submit</Button>
-          </ButtonGroup>
+          </>
         );
     }
   };
@@ -161,7 +163,10 @@ export const Chat = (props: ChatProps) => {
     <div className='chat'>
       <div className={`chat-header ${!currentFork ? 'right' : ''}`}>
         {currentFork && <Button onClick={onForkBack}>Back</Button>}
-        {renderRestructureActions()}
+        <ButtonGroup>
+          {renderRestructureActions()}
+          <Button onClick={() => setParseModalOpen(true)}>Parse</Button>
+        </ButtonGroup>
       </div>
       <div className='messages'>
         <Messages
@@ -182,6 +187,16 @@ export const Chat = (props: ChatProps) => {
         members={props.members}
         onSubmit={onSubmit}
         editMessage={editMsg}
+      />
+      <ParseModal
+        members={props.members}
+        open={parseModalOpen}
+        onClose={(messages: IMessage[] | undefined) => {
+          if (messages && !currentFork) {
+            props.onChangeMessages([...props.messages, ...messages]);
+          }
+          setParseModalOpen(false);
+        }}
       />
     </div>
   );

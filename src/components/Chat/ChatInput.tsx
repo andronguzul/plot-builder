@@ -30,7 +30,7 @@ export const ChatInput = (props: ChatInputProps) => {
   useEffect(() => {
     if (props.editMessage) {
       setAuthor(props.editMessage.author);
-      setAuthorSwitchForbidden(true);
+      if (props.editMessage.text) setAuthorSwitchForbidden(true);
       if (props.editMessage.type === MessageType.Text) {
         setMessage(props.editMessage.text || '');
         setActiveTab(MessageType.Text);
