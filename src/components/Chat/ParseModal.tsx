@@ -21,6 +21,8 @@ export const ParseModal = (props: ParseModalProps) => {
     for (const item of divided) {
       if (dividingRegex.test(item)) {
         currentAuthor = item.slice(0, -1);
+      } else if (!currentAuthor) {
+        continue;
       } else {
         const authorMessages = item.split('\n');
         for (const authorMessage of authorMessages) {
@@ -55,7 +57,7 @@ export const ParseModal = (props: ParseModalProps) => {
       className='member-selector-modal'
     >
       <ModalHeader toggle={() => props.onClose()}>
-        Members
+        Parse raw
       </ModalHeader>
       <ModalBody>
         <Input
