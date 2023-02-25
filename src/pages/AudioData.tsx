@@ -122,10 +122,10 @@ export const AudioData = () => {
             const loaded = e.target?.result as string;
             if (loaded) res(loaded);
             else {
-              console.log('Empty or non-string data');
+              console.error('Empty or non-string data');
             }
           } catch (e) {
-            console.log('Invalid file provided', e);
+            console.error('Invalid file provided', e);
           }
         };
       }));

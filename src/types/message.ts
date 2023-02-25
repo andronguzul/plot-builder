@@ -31,6 +31,7 @@ export interface IMessage {
 }
 
 export interface IChat {
+  prevChatName?: string;
   membersAmount: number;
   messages: IMessage[];
 }

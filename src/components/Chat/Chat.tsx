@@ -57,7 +57,6 @@ export const Chat = (props: ChatProps) => {
   const onEditMessage = (message: IMessageDataType, messages: IMessage[]) => {
     setClickedMessage(undefined);
     setEditMsg(message);
-    console.log(messages);
     props.onChangeMessages(getMessages(messages));
   };
 

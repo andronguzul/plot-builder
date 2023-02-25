@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Button, ButtonGroup, Input } from 'reactstrap';
-import { getAllAuthors, getAllMessages, setSelectedToFalse, validateMessages } from '../utils';
+import { Button, ButtonGroup, Collapse, Input } from 'reactstrap';
+import { getAllAuthors, getAllMessages, setDefaultSelected, setSelectedToFalse, validateMessages } from '../utils';
 import { Members } from '../components/Members';
 import { Translations } from '../components/Translations';
 import { Chat } from '../components/Chat/Chat';
@@ -13,12 +13,14 @@ export const ChatPage = () => {
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [canDownload, setCanDownload] = useState(false);
   const [chatName, setChatName] = useState('');
+  const [prevChatName, setPrevChatName] = useState('');
   const [members, setMembers] = useState<string[]>([]);
   const [translations, setTranslations] = useState<ITranslation[]>([]);
   const [membersOpen, setMembersOpen] = useState(false);
   const [translationsOpen, setTranslationsOpen] = useState(false);
   const [translationKeys, setTranslationKeys] = useState<string[]>([]);
   const [lastUpdated, setLastUpdated] = useState<Date>();
+  const [rightMenuCollapsed, setRightMenuCollapsed] = useState(false);
 
   const hiddenMessagesFileInput = React.useRef<HTMLInputElement>(null);
   const hiddenTranslationsFileInput = React.useRef<HTMLInputElement>(null);
@@ -101,7 +103,7 @@ export const ChatPage = () => {
         const data = e.target?.result;
         cb(data, fileName);
       } catch (e) {
-        console.log('Invalid file provided', e);
+        console.error('Invalid file provided', e);
       }
     };
   }
@@ -112,9 +114,10 @@ export const ChatPage = () => {
       if (!parsed.messages.length || !validateMessages(parsed.messages)) {
         throw new Error();
       }
-      setMessages(parsed.messages);
+      setMessages(setDefaultSelected(parsed.messages));
       setMembers(getAllAuthors(parsed.messages));
       setChatName(fileName.split('.')[0]);
+      setPrevChatName(parsed.prevChatName || '');
     });
   };
 
@@ -141,12 +144,36 @@ export const ChatPage = () => {
     const chat: IChat = {
       membersAmount: members.length,
       messages: setSelectedToFalse(JSON.parse(JSON.stringify(messages))),
+      prevChatName,
     }
     const chatContent = JSON.stringify(chat);
     const translationsContent = JSON.stringify({ translations });
     await download(chatContent, '.json');
     await download(translationsContent, '.json');
   };
+
+  const rightMenuActions = (
+    <>
+      <Button onClick={() => hiddenMessagesFileInput.current?.click()}>Import Messages</Button>
+      <Button onClick={() => hiddenTranslationsFileInput.current?.click()}>Import Translations</Button>
+      <CleanButton
+        onClean={() => {
+          setMessages([]);
+          setMembers([]);
+          setTranslations([]);
+          setTranslationKeys([]);
+          setCanDownload(false);
+          setChatName('');
+        }}
+      />
+      <Button disabled={!canDownload} onClick={onDownload}>Download</Button>
+      <Button onClick={() => {
+        setSearchParams({
+          page: '2',
+        });
+      }}>Audio</Button>
+    </>
+  );
 
   return (
     <div className='chat-page'>
@@ -157,9 +184,15 @@ export const ChatPage = () => {
       />
       <div className='chat-actions-left in-row'>
         <Input
-          placeholder='chat-name'
+          placeholder='chat name'
           value={chatName}
           onChange={e => setChatName(e.target.value)}
+          className='margined-right'
+        />
+        <Input
+          placeholder='previous chat name'
+          value={prevChatName}
+          onChange={e => setPrevChatName(e.target.value)}
           className='margined-right'
         />
         <ButtonGroup>
@@ -171,26 +204,13 @@ export const ChatPage = () => {
         <div className='last-updated'>
           Last updated: {lastUpdated ? lastUpdated.toLocaleString() : 'never'}
         </div>
-        <ButtonGroup>
-          <Button onClick={() => hiddenMessagesFileInput.current?.click()}>Import Messages</Button>
-          <Button onClick={() => hiddenTranslationsFileInput.current?.click()}>Import Translations</Button>
-          <CleanButton
-            onClean={() => {
-              setMessages([]);
-              setMembers([]);
-              setTranslations([]);
-              setTranslationKeys([]);
-              setCanDownload(false);
-              setChatName('');
-            }}
-          />
-          <Button disabled={!canDownload} onClick={onDownload}>Download</Button>
-          <Button onClick={() => {
-            setSearchParams({
-              page: '2',
-            });
-          }}>Audio</Button>
-        </ButtonGroup>
+        <ButtonGroup className='d-none d-xl-block'>{rightMenuActions}</ButtonGroup>
+        <div className='d-lg-block d-xl-none'>
+          <Button onClick={() => setRightMenuCollapsed(!rightMenuCollapsed)}>Actions</Button>
+          <Collapse isOpen={rightMenuCollapsed} className='right-menu-collapse'>
+            <ButtonGroup vertical>{rightMenuActions}</ButtonGroup>
+          </Collapse>
+        </div>
       </div>
       <Members
         members={members}

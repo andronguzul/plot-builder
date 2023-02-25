@@ -15,8 +15,10 @@ export const TriggerEditorModal = (props: TriggerEditorModalProps) => {
   useEffect(() => {
     if (props.trigger) {
       setTriggers(ParsedTriggerList.parseRawTrigger(props.trigger));
+    } else {
+      setTriggers([]);
     }
-  }, [props.trigger]);
+  }, [props.open, props.trigger]);
 
   const onChangeTriggerType = (e: React.ChangeEvent<HTMLInputElement>, triggerType: TriggerType) => {
     const checked = e.target.checked;
@@ -44,7 +46,7 @@ export const TriggerEditorModal = (props: TriggerEditorModalProps) => {
         {Object.values(TriggerType).map(triggerType => {
           const triggerValue = ParsedTriggerList.getValue(triggers, triggerType);
           return (
-            <div className='trigger-item'>
+            <div className='trigger-item' key={triggerType}>
               <div>
                 <Input
                   className='trigger-item-checkbox'

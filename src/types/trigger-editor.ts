@@ -13,6 +13,8 @@ export enum TriggerType {
   MUSIC_START = 'music-start',
   MUSIC_STOP = 'music-stop',
   SAVE = 'save',
+  AFFECT_FUTURE = 'affect-future',
+  AFFECTED_BY_PAST = 'affected-by-past',
 }
 
 export class ParsedTriggerList {

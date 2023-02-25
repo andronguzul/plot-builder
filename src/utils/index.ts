@@ -285,3 +285,19 @@ export function setSelectedToFalse(messages: IMessage[]): IMessage[] {
   }
   return messagesToMutate;
 }
+
+export function setDefaultSelected(messages: IMessage[]): IMessage[] {
+  const messagesToMutate = [...messages];
+  for (const message of messagesToMutate) {
+    if (!message.playerMessageData) continue;
+    if (!message.playerMessageData.some(x => x.selected)) {
+      message.playerMessageData[0].selected = true;
+    }
+    for (const dataItem of message.playerMessageData) {
+      if (dataItem.fork) {
+        dataItem.fork = setDefaultSelected(dataItem.fork);
+      }
+    }
+  }
+  return messagesToMutate;
+}
