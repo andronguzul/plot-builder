@@ -13,6 +13,8 @@ export enum TriggerType {
   MUSIC_START = 'music-start',
   MUSIC_STOP = 'music-stop',
   SAVE = 'save',
+  ROOM_ANIMATION = 'room-animation',
+  NEXT_EPISODE = 'next-episode',
   AFFECT_FUTURE = 'affect-future',
   AFFECTED_BY_PAST = 'affected-by-past',
 }

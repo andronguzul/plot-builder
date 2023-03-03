@@ -32,20 +32,14 @@ export const TriggerData = <T extends IBaseTrigger & ILanguage & Record<keyof T,
     props.listUpdateFn(dataToMutate);
   };
 
-  const onChangeListItem = (trigger: string, key: keyof T, value: string) => {
+  const onChangeListItem = (indx: number, key: keyof T, value: string) => {
     const dataToMutate = [...props.list];
-    const item = dataToMutate.find(x => x.trigger === trigger);
-    if (!item) return;
-    const indx = dataToMutate.indexOf(item);
     dataToMutate[indx][key] = value as T[keyof T];
     props.listUpdateFn(dataToMutate);
   };
 
-  const onRemoveListItem = (trigger: string) => {
+  const onRemoveListItem = (indx: number) => {
     const dataToMutate = [...props.list];
-    const item = dataToMutate.find(x => x.trigger === trigger);
-    if (!item) return;
-    const indx = dataToMutate.indexOf(item);
     dataToMutate.splice(indx, 1);
     props.listUpdateFn(dataToMutate);
   };
@@ -72,12 +66,12 @@ export const TriggerData = <T extends IBaseTrigger & ILanguage & Record<keyof T,
                     placeholder='trigger value'
                     className='margined-right'
                     value={item[key]}
-                    onChange={(e) => onChangeListItem(item.trigger, key, e.target.value)}
+                    onChange={(e) => onChangeListItem(indx, key, e.target.value)}
                   />
                 )}
                 <Button
                   color='danger'
-                  onClick={() => onRemoveListItem(item.trigger)}
+                  onClick={() => onRemoveListItem(indx)}
                 >Remove</Button>
               </div>
               <div className='text-container'>
@@ -87,7 +81,7 @@ export const TriggerData = <T extends IBaseTrigger & ILanguage & Record<keyof T,
                     type='textarea'
                     placeholder={`${key.toString()} info`}
                     value={item[key]}
-                    onChange={(e) => onChangeListItem(item.trigger, key, e.target.value)}
+                    onChange={(e) => onChangeListItem(indx, key, e.target.value)}
                     className='lang-container'
                   />
                 )}
