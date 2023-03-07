@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, ButtonGroup, Collapse, Input } from 'reactstrap';
-import { getAllAuthors, getAllMessages, setDefaultSelected, setSelectedToFalse, validateMessages } from '../utils';
+import { getAllMessages, setDefaultSelected, setSelectedToFalse, validateMessages } from '../utils';
 import { Members } from '../components/Members';
 import { Translations } from '../components/Translations';
 import { Chat } from '../components/Chat/Chat';
@@ -115,7 +115,7 @@ export const ChatPage = () => {
         throw new Error();
       }
       setMessages(setDefaultSelected(parsed.messages));
-      setMembers(getAllAuthors(parsed.messages));
+      setMembers(parsed.members);
       setChatName(fileName.split('.')[0]);
       setPrevChatName(parsed.prevChatName || '');
     });
@@ -142,7 +142,7 @@ export const ChatPage = () => {
 
   const onDownload = async () => {
     const chat: IChat = {
-      membersAmount: members.length,
+      members,
       messages: setSelectedToFalse(JSON.parse(JSON.stringify(messages))),
       prevChatName,
     }
