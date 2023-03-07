@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, ButtonGroup, Collapse, Input } from 'reactstrap';
-import { getAllMessages, setDefaultSelected, setSelectedToFalse, validateMessages } from '../utils';
+import { getAllMessages, setDefaultSelected, prepareForDownload, validateMessages } from '../utils';
 import { Members } from '../components/Members';
 import { Translations } from '../components/Translations';
 import { Chat } from '../components/Chat/Chat';
@@ -13,7 +13,6 @@ export const ChatPage = () => {
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [canDownload, setCanDownload] = useState(false);
   const [chatName, setChatName] = useState('');
-  const [prevChatName, setPrevChatName] = useState('');
   const [members, setMembers] = useState<string[]>([]);
   const [translations, setTranslations] = useState<ITranslation[]>([]);
   const [membersOpen, setMembersOpen] = useState(false);
@@ -117,7 +116,6 @@ export const ChatPage = () => {
       setMessages(setDefaultSelected(parsed.messages));
       setMembers(parsed.members);
       setChatName(fileName.split('.')[0]);
-      setPrevChatName(parsed.prevChatName || '');
     });
   };
 
@@ -143,8 +141,7 @@ export const ChatPage = () => {
   const onDownload = async () => {
     const chat: IChat = {
       members,
-      messages: setSelectedToFalse(JSON.parse(JSON.stringify(messages))),
-      prevChatName,
+      messages: prepareForDownload(JSON.parse(JSON.stringify(messages))),
     }
     const chatContent = JSON.stringify(chat);
     const translationsContent = JSON.stringify({ translations });
@@ -187,12 +184,6 @@ export const ChatPage = () => {
           placeholder='chat name'
           value={chatName}
           onChange={e => setChatName(e.target.value)}
-          className='margined-right'
-        />
-        <Input
-          placeholder='previous chat name'
-          value={prevChatName}
-          onChange={e => setPrevChatName(e.target.value)}
           className='margined-right'
         />
         <ButtonGroup>

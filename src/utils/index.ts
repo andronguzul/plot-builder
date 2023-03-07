@@ -1,3 +1,4 @@
+import { v4 as uuid } from 'uuid';
 import { IMessage, IMessageData, INpcMessageData, IPlayerMessageData, MessageType } from '../types';
 
 export function getAllMessages(list: IMessage[]): string[] {
@@ -272,14 +273,18 @@ export function updateFork(messages: IMessage[], messageToUpdate: IPlayerMessage
   return messagesToMutate;
 }
 
-export function setSelectedToFalse(messages: IMessage[]): IMessage[] {
+export function prepareForDownload(messages: IMessage[]): IMessage[] {
   const messagesToMutate = [...messages];
   for (const message of messagesToMutate) {
-    if (!message.playerMessageData) continue;
-    for (const dataItem of message.playerMessageData) {
-      dataItem.selected = false;
-      if (dataItem.fork) {
-        dataItem.fork = setSelectedToFalse(dataItem.fork);
+    if (message.npcMessageData) {
+      if (!message.npcMessageData.id) message.npcMessageData.id = uuid();
+    } else if (message.playerMessageData) {
+      for (const dataItem of message.playerMessageData) {
+        dataItem.selected = false;
+        if (!dataItem.id) dataItem.id = uuid();
+        if (dataItem.fork) {
+          dataItem.fork = prepareForDownload(dataItem.fork);
+        }
       }
     }
   }

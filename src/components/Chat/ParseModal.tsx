@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Button, Input, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import { v4 as uuid } from 'uuid';
 import { IMessage, MessageType } from '../../types';
 
 export interface ParseModalProps {
@@ -29,6 +30,7 @@ export const ParseModal = (props: ParseModalProps) => {
           if (currentAuthor === 'Me') {
             messages.push({
               playerMessageData: [{
+                id: uuid(),
                 author: currentAuthor,
                 type: MessageType.Text,
                 text: authorMessage,
@@ -38,6 +40,7 @@ export const ParseModal = (props: ParseModalProps) => {
           } else {
             messages.push({
               npcMessageData: {
+                id: uuid(),
                 author: currentAuthor,
                 type: MessageType.Text,
                 text: authorMessage,

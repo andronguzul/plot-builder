@@ -6,6 +6,7 @@ export enum MessageType {
 }
 
 export interface IMessageData {
+  id: string;
   type: MessageType;
   author: string;
   filename?: string;
@@ -31,7 +32,6 @@ export interface IMessage {
 }
 
 export interface IChat {
-  prevChatName?: string;
   members: string[];
   messages: IMessage[];
 }

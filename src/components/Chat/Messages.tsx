@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { v4 as uuid } from 'uuid';
 import { IMessage, IMessageDataType, INpcMessageData, IPlayerMessageData, MessageType, PLAYER } from '../../types';
 import { messageExists, removeField } from '../../utils';
 import { Message } from './Message';
@@ -55,6 +56,7 @@ export const Messages = (props: MessagesProps) => {
         option.selected = false;
       }
       const msg: IPlayerMessageData = {
+        id: uuid(),
         author: PLAYER,
         text: '',
         isEditing: true,
@@ -67,6 +69,7 @@ export const Messages = (props: MessagesProps) => {
       const previousMsg = messagesToMutate[msgIndx];
       if (previousMsg.npcMessageData) {
         const msg: INpcMessageData = {
+          id: uuid(),
           author: previousMsg.npcMessageData.author,
           text: '',
           isEditing: true,
@@ -78,6 +81,7 @@ export const Messages = (props: MessagesProps) => {
         props.onEditMessage(msg, messagesToMutate);
       } else {
         const msg: IPlayerMessageData = {
+          id: uuid(),
           author: PLAYER,
           text: '',
           isEditing: true,
