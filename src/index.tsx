@@ -9,11 +9,18 @@ import {
 import './styles/index.scss';
 import { ChatPage } from './pages/Chat';
 import { AudioData } from './pages/AudioData';
+import { TriggersSequencePage } from './pages/TriggersSequence';
 
 export const App = () => {
   const [searchParams] = useSearchParams();
-  if (searchParams.get('page') === '2') return <AudioData />;
-  return <ChatPage />;
+  switch (searchParams.get('page')) {
+    case '2':
+      return <AudioData />;
+    case '3':
+      return <TriggersSequencePage />
+    default:
+      return <ChatPage />;
+  }
 };
 
 const root = ReactDOM.createRoot(document.getElementById('root')!);

@@ -5,7 +5,7 @@ export interface MembersProps {
   members: string[];
   onClose: Function;
   onSave: Function;
-  open: boolean
+  open: boolean;
 }
 
 export const Members = (props: MembersProps) => {

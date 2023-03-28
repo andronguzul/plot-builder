@@ -1,0 +1,83 @@
+.triggers-sequence-page {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .header {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+
+  .content-box {
+    width: 600px;
+    height: 600px;
+    padding: 10px;
+    background: rgb(56, 56, 56);
+    border: 3px solid rgb(120, 120, 120);
+    border-radius: 10px;
+    overflow-y: auto;
+    .content-box-header {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 10px;
+    }
+    .content-box-table-header {
+      color: white;
+    }
+  }
+
+  .no-content-box {
+    width: 600px;
+    height: 600px;
+    background: rgb(56, 56, 56);
+    border: 3px solid rgb(120, 120, 120);
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .import-box {
+    width: 600px;
+    height: 600px;
+    padding: 10px;
+    background: rgb(56, 56, 56);
+    border: 3px solid rgb(120, 120, 120);
+    border-radius: 10px;
+    overflow-y: auto;
+    .import-box-content {
+      position: relative;
+      .import-box-content-header {
+        padding-top: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        .import-box-content-header-title {
+          font-weight: bold;
+          font-size: 20px;
+          padding-left: 10px;
+        }
+      }
+      .import-step {
+        padding-top: 10px;
+        .no-data {
+          height: 500px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-weight: bold;
+          font-style: italic;
+          border-radius: 10px;
+          color: rgb(218, 218, 218);
+          cursor: pointer;
+          &:hover {
+            background: rgb(80, 80, 80);
+          }
+        }
+      }
+    }
+  }
+}

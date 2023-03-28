@@ -131,7 +131,7 @@ export const AudioData = () => {
       }));
     }
     return Promise.all(tasks);
-  }
+  };
 
   const onPlayerThoughtsImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const data: string[] = await onImport(e);
@@ -236,6 +236,11 @@ export const AudioData = () => {
               page: '1',
             });
           }}>Chat</Button>
+          <Button onClick={() => {
+            setSearchParams({
+              page: '3',
+            });
+          }}>Sequence</Button>
         </ButtonGroup>
       </div>
       <div className='content'>

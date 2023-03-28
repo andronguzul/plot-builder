@@ -105,7 +105,7 @@ export const ChatPage = () => {
         console.error('Invalid file provided', e);
       }
     };
-  }
+  };
 
   const onChatImport = (e: React.ChangeEvent<HTMLInputElement>) => {
     onImport(e, (data: string, fileName: string) => {
@@ -169,6 +169,11 @@ export const ChatPage = () => {
           page: '2',
         });
       }}>Audio</Button>
+      <Button onClick={() => {
+        setSearchParams({
+          page: '3',
+        });
+      }}>Sequence</Button>
     </>
   );
 
