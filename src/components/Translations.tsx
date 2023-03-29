@@ -108,6 +108,7 @@ export const Translations = (props: TranslationsProps) => {
                       placeholder={`${lang} translation`}
                       value={translations.find(x => x.key === key)?.[lang] || ''}
                       onChange={e => onTranslationChange(e.target.value, key, lang)}
+                      className='translation'
                     />
                   </th>
                 )}

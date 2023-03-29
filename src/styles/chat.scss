@@ -412,12 +412,15 @@
 
 .translations {
   color: black;
-  min-width: 800px;
+  min-width: 1000px;
   .table-headers {
     text-align: center;
   }
   .table-key {
     padding-top: 15px;
+  }
+  .translation {
+    min-width: 300px;
   }
 }
 
