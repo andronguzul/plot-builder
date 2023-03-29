@@ -3,7 +3,6 @@ import { Progress } from 'reactstrap';
 import { IChat } from '../../../types';
 import { getTriggers } from '../../../utils';
 import { ImportResult, ImportStep } from './ImportStep';
-import { SelectFirstChatStep } from './SelectFirstChatStep';
 import { VerifyStep } from './VerifyStep';
 
 export interface TriggersSequenceImportBoxProps {
@@ -18,7 +17,6 @@ export interface TriggerInfo {
 
 export enum ImportBoxStep {
   IMPORT = 'IMPORT',
-  SELECT_FIRST_CHAT = 'SELECT_FIRS_CHAT',
   VERIFY = 'VERIFY',
 }
 
@@ -26,7 +24,6 @@ export const TriggersSequenceImportBox = (props: TriggersSequenceImportBoxProps)
   const [step, setStep] = useState(ImportBoxStep.IMPORT);
   const [progressValue, setProgressValue] = useState(0);
   const [chats, setChats] = useState<ImportResult[]>([]);
-  const [firstChat, setFirstChat] = useState('');
 
   const getTriggersSequence = (): TriggerInfo[] => {
     const triggers: TriggerInfo[] = [];
@@ -44,13 +41,11 @@ export const TriggersSequenceImportBox = (props: TriggersSequenceImportBoxProps)
 
   const onCancel = () => {
     setChats([]);
-    setFirstChat('');
     props.onCancel();
   };
 
   const onSuccess = () => {
     setChats([]);
-    setFirstChat('');
     const triggers = getTriggersSequence();
     props.onSuccess(triggers);
   };
@@ -59,9 +54,6 @@ export const TriggersSequenceImportBox = (props: TriggersSequenceImportBoxProps)
     switch (step) {
       case ImportBoxStep.IMPORT:
         setProgressValue(0);
-        break;
-      case ImportBoxStep.SELECT_FIRST_CHAT:
-        setProgressValue(50);
         break;
       case ImportBoxStep.VERIFY:
         setProgressValue(100);
@@ -77,17 +69,6 @@ export const TriggersSequenceImportBox = (props: TriggersSequenceImportBoxProps)
           <ImportStep
             data={chats}
             onImport={(data: ImportResult[]) => setChats(data)}
-            onNext={() => onStepChange(ImportBoxStep.SELECT_FIRST_CHAT)}
-            onCancel={() => onCancel()}
-          />
-        );
-      case ImportBoxStep.SELECT_FIRST_CHAT:
-        return (
-          <SelectFirstChatStep
-            data={chats}
-            firstChat={firstChat}
-            onSelect={(chat: string) => setFirstChat(chat)}
-            onBack={() => onStepChange(ImportBoxStep.IMPORT)}
             onNext={() => onStepChange(ImportBoxStep.VERIFY)}
             onCancel={() => onCancel()}
           />
@@ -96,8 +77,7 @@ export const TriggersSequenceImportBox = (props: TriggersSequenceImportBoxProps)
         return (
           <VerifyStep
             data={chats}
-            firstChat={firstChat}
-            onBack={() => onStepChange(ImportBoxStep.SELECT_FIRST_CHAT)}
+            onBack={() => onStepChange(ImportBoxStep.IMPORT)}
             onSubmit={() => onSuccess()}
             onCancel={() => onCancel()}
           />

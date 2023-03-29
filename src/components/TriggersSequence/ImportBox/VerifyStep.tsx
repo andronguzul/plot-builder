@@ -5,7 +5,6 @@ import { ImportResult } from './ImportStep';
 
 export interface VerifyStepProps {
   data: ImportResult[];
-  firstChat: string;
   onBack: Function;
   onSubmit: Function;
   onCancel: Function;
@@ -32,7 +31,6 @@ export const VerifyStep = (props: VerifyStepProps) => {
         {props.data.map(item =>
           <ListGroupItem
             key={item.fileName}
-            active={item.fileName === props.firstChat}
           >
             {item.fileName}
           </ListGroupItem>
