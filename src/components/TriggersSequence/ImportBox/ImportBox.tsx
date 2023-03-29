@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Progress } from 'reactstrap';
+import { IChat } from '../../../types';
+import { getTriggers } from '../../../utils';
 import { ImportResult, ImportStep } from './ImportStep';
 import { SelectFirstChatStep } from './SelectFirstChatStep';
 import { VerifyStep } from './VerifyStep';
@@ -7,6 +9,11 @@ import { VerifyStep } from './VerifyStep';
 export interface TriggersSequenceImportBoxProps {
   onCancel: Function;
   onSuccess: Function;
+}
+
+export interface TriggerInfo {
+  chatName: string;
+  triggers: string[];
 }
 
 export enum ImportBoxStep {
@@ -21,8 +28,18 @@ export const TriggersSequenceImportBox = (props: TriggersSequenceImportBoxProps)
   const [chats, setChats] = useState<ImportResult[]>([]);
   const [firstChat, setFirstChat] = useState('');
 
-  const getTriggersSequence = (firstChat: string): string[] => {
-    return chats.map(chat => chat.fileName);
+  const getTriggersSequence = (): TriggerInfo[] => {
+    const triggers: TriggerInfo[] = [];
+    for (const chat of chats) {
+      const chatContent: IChat = JSON.parse(chat.data);
+      const chatTriggers = getTriggers(chatContent.messages);
+
+      triggers.push({
+        chatName: chat.fileName,
+        triggers: chatTriggers,
+      });
+    }
+    return triggers;
   };
 
   const onCancel = () => {
@@ -34,7 +51,7 @@ export const TriggersSequenceImportBox = (props: TriggersSequenceImportBoxProps)
   const onSuccess = () => {
     setChats([]);
     setFirstChat('');
-    const triggers = getTriggersSequence(firstChat);
+    const triggers = getTriggersSequence();
     props.onSuccess(triggers);
   };
 

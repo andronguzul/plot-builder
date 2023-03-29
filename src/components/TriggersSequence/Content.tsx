@@ -1,18 +1,18 @@
 import { useState } from 'react';
 import { TriggersSequenceContentBox } from './ContentBox';
-import { TriggersSequenceImportBox } from './ImportBox/ImportBox';
+import { TriggerInfo, TriggersSequenceImportBox } from './ImportBox/ImportBox';
 import { TriggersSequenceNoContentBox } from './NoContentBox';
 
 export const TriggersSequenceContent = () => {
   const [importOpen, setImportOpen] = useState(false);
-  const [triggers, setTriggers] = useState<string[]>([]);
+  const [triggers, setTriggers] = useState<TriggerInfo[]>([]);
 
   switch (true) {
     case importOpen:
       return (
         <TriggersSequenceImportBox
           onCancel={() => setImportOpen(false)}
-          onSuccess={(triggers: string[]) => {
+          onSuccess={(triggers: TriggerInfo[]) => {
             setImportOpen(false);
             setTriggers(triggers);
           }}

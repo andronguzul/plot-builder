@@ -28,7 +28,7 @@ export const ImportStep = (props: ImportStepProps) => {
           try {
             const loaded = e.target?.result as string;
             if (loaded) res({
-              fileName: file.name,
+              fileName: file.name.slice(0, file.name.indexOf('.')),
               data: loaded
             });
             else {
