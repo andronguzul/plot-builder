@@ -16,9 +16,10 @@ export const TriggersSequenceList = (props: TriggersSequenceProps) => {
       {props.sequence.triggers.map(trigger => {
         if (trigger.value) {
           const parsed = ParsedTriggerList.parseRawTrigger(trigger.value);
+          const sorted = ParsedTriggerList.sortTriggers(parsed);
           return (
             <>
-              {parsed.map(x =>
+              {sorted.map(x =>
                 <tr>
                   <th>{x.key}</th>
                   <th>{x.value}</th>
@@ -35,10 +36,11 @@ export const TriggersSequenceList = (props: TriggersSequenceProps) => {
                 </th>
                 <th>
                   <ButtonGroup>
-                    {trigger.fork.map(forkItem => {
+                    {trigger.fork.map((forkItem, indx) => {
                       const parsed = ParsedTriggerList.parseRawTrigger(forkItem.triggers[0].value!);
+                      const sorted = ParsedTriggerList.sortTriggers(parsed);
                       return (
-                        <Button onClick={() => setSelectedForkItem(forkItem)}>{parsed[0].value}</Button>
+                        <Button onClick={() => setSelectedForkItem(forkItem)}>{sorted[0].value}</Button>
                       );
                     })}
                   </ButtonGroup>

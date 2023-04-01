@@ -57,6 +57,17 @@ export class ParsedTriggerList {
     });
   }
 
+  static sortTriggers(triggers: IParsedTrigger[]): IParsedTrigger[] {
+    const res: IParsedTrigger[] = [];
+    for (const key of Object.values(TriggerType)) {
+      const trigger = triggers.find(x => x.key === key);
+      if (trigger) {
+        res.push(trigger);
+      }
+    }
+    return res;
+  }
+
   static getValue(triggers: IParsedTrigger[], triggerType: TriggerType): string | null {
     const trigger = triggers.find(x => x.key === triggerType);
     if (!trigger) return null;
