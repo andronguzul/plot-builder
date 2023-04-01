@@ -1,35 +1,35 @@
 import { useState } from 'react';
+import { TriggersSequence } from '../../types/triggers-sequence';
 import { TriggersSequenceContentBox } from './ContentBox';
-import { TriggerInfo, TriggersSequenceImportBox } from './ImportBox/ImportBox';
+import { TriggersSequenceImportBox } from './ImportBox/ImportBox';
 import { TriggersSequenceNoContentBox } from './NoContentBox';
 
 export const TriggersSequenceContent = () => {
   const [importOpen, setImportOpen] = useState(false);
-  const [triggers, setTriggers] = useState<TriggerInfo[]>([]);
+  const [sequence, setSequence] = useState<TriggersSequence>();
 
-  switch (true) {
-    case importOpen:
-      return (
-        <TriggersSequenceImportBox
-          onCancel={() => setImportOpen(false)}
-          onSuccess={(triggers: TriggerInfo[]) => {
-            setImportOpen(false);
-            setTriggers(triggers);
-          }}
-        />
-      );
-    case !!triggers.length:
-      return (
-        <TriggersSequenceContentBox
-          triggers={triggers}
-          onImport={() => setImportOpen(true)}
-        />
-      );
-    default:
-      return (
-        <TriggersSequenceNoContentBox
-          onImport={() => setImportOpen(true)}
-        />
-      );
+  if (importOpen) {
+    return (
+      <TriggersSequenceImportBox
+        onCancel={() => setImportOpen(false)}
+        onSuccess={(sequence) => {
+          setImportOpen(false);
+          setSequence(sequence);
+        }}
+      />
+    );
   }
+  if (sequence) {
+    return (
+      <TriggersSequenceContentBox
+        sequence={sequence}
+        onImport={() => setImportOpen(true)}
+      />
+    );
+  }
+  return (
+    <TriggersSequenceNoContentBox
+      onImport={() => setImportOpen(true)}
+    />
+  );
 };

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Button, Input, Modal, ModalBody, ModalHeader } from 'reactstrap';
-import { IParsedTrigger, ParsedTriggerList, TriggerType } from '../../types/trigger-editor';
+import { IParsedTrigger, ParsedTriggerList, TriggerType } from '../../types';
 
 export interface TriggerEditorModalProps {
   onSave: Function;

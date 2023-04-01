@@ -4,17 +4,17 @@ export interface IParsedTrigger {
 }
 
 export enum TriggerType {
-  MECHANICS = 'mechanics',
+  NEXT_EPISODE = 'next-episode',
+  ROOM_ANIMATION = 'room-animation',
   PLAYER_THOUGHTS = 'player-thoughts',
-  NEXT_CHAT = 'next-chat',
   RADIO = 'radio',
+  MECHANICS = 'mechanics',
+  NEXT_CHAT = 'next-chat',
   TIME_LIMIT_START = 'time-limit-start',
   TIME_LIMIT_STOP = 'time-limit-stop',
   MUSIC_START = 'music-start',
   MUSIC_STOP = 'music-stop',
   SAVE = 'save',
-  ROOM_ANIMATION = 'room-animation',
-  NEXT_EPISODE = 'next-episode',
   AFFECT_FUTURE = 'affect-future',
   AFFECTED_BY_PAST = 'affected-by-past',
 }

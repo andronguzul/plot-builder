@@ -1,22 +1,19 @@
 import { useState } from 'react';
 import { Progress } from 'reactstrap';
-import { IChat } from '../../../types';
-import { getTriggers } from '../../../utils';
+import { TriggersSequence } from '../../../types/triggers-sequence';
+import { getTriggersSequence } from '../../../utils/triggers-sequence';
 import { ImportResult, ImportStep } from './ImportStep';
+import { SelectFirstChatStep } from './SelectFirstChatStep';
 import { VerifyStep } from './VerifyStep';
 
 export interface TriggersSequenceImportBoxProps {
-  onCancel: Function;
-  onSuccess: Function;
-}
-
-export interface TriggerInfo {
-  chatName: string;
-  triggers: string[];
+  onCancel: () => void;
+  onSuccess: (sequence: TriggersSequence) => void;
 }
 
 export enum ImportBoxStep {
   IMPORT = 'IMPORT',
+  SELECT_FIRST_CHAT = 'SELECT_FIRS_CHAT',
   VERIFY = 'VERIFY',
 }
 
@@ -24,36 +21,41 @@ export const TriggersSequenceImportBox = (props: TriggersSequenceImportBoxProps)
   const [step, setStep] = useState(ImportBoxStep.IMPORT);
   const [progressValue, setProgressValue] = useState(0);
   const [chats, setChats] = useState<ImportResult[]>([]);
+  const [firstChatName, setFirstChatName] = useState('');
 
-  const getTriggersSequence = (): TriggerInfo[] => {
-    const triggers: TriggerInfo[] = [];
-    for (const chat of chats) {
-      const chatContent: IChat = JSON.parse(chat.data);
-      const chatTriggers = getTriggers(chatContent.messages);
-
-      triggers.push({
-        chatName: chat.fileName,
-        triggers: chatTriggers,
-      });
+  const getSequence = (): TriggersSequence => {
+    const firstChat = chats.find(x => x.fileName === firstChatName);
+    if (!firstChat) {
+      throw new Error(`First chat was not found (${firstChatName})`);
     }
-    return triggers;
+
+    const triggers = getTriggersSequence(firstChatName, chats);
+    console.log(triggers);
+
+    return {
+      triggers,
+    };
   };
 
   const onCancel = () => {
     setChats([]);
+    setFirstChatName('');
     props.onCancel();
   };
 
   const onSuccess = () => {
     setChats([]);
-    const triggers = getTriggersSequence();
-    props.onSuccess(triggers);
+    setFirstChatName('');
+    props.onSuccess(getSequence());
   };
 
   const onStepChange = (step: ImportBoxStep) => {
     switch (step) {
       case ImportBoxStep.IMPORT:
         setProgressValue(0);
+        break;
+      case ImportBoxStep.SELECT_FIRST_CHAT:
+        setProgressValue(50);
         break;
       case ImportBoxStep.VERIFY:
         setProgressValue(100);
@@ -69,6 +71,17 @@ export const TriggersSequenceImportBox = (props: TriggersSequenceImportBoxProps)
           <ImportStep
             data={chats}
             onImport={(data: ImportResult[]) => setChats(data)}
+            onNext={() => onStepChange(ImportBoxStep.SELECT_FIRST_CHAT)}
+            onCancel={() => onCancel()}
+          />
+        );
+      case ImportBoxStep.SELECT_FIRST_CHAT:
+        return (
+          <SelectFirstChatStep
+            data={chats}
+            firstChat={firstChatName}
+            onSelect={(chat: string) => setFirstChatName(chat)}
+            onBack={() => onStepChange(ImportBoxStep.IMPORT)}
             onNext={() => onStepChange(ImportBoxStep.VERIFY)}
             onCancel={() => onCancel()}
           />
@@ -77,7 +90,8 @@ export const TriggersSequenceImportBox = (props: TriggersSequenceImportBoxProps)
         return (
           <VerifyStep
             data={chats}
-            onBack={() => onStepChange(ImportBoxStep.IMPORT)}
+            firstChat={firstChatName}
+            onBack={() => onStepChange(ImportBoxStep.SELECT_FIRST_CHAT)}
             onSubmit={() => onSuccess()}
             onCancel={() => onCancel()}
           />
