@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Button, Input, Modal, ModalBody, ModalHeader } from 'reactstrap';
-import { IParsedTrigger, ParsedTriggerList, TriggerType } from '../../types';
+import { Button, Input, Modal, ModalBody, ModalHeader, Alert } from 'reactstrap';
+import { TriggerType } from '../../types';
 
 export interface TriggerEditorModalProps {
   onSave: Function;
@@ -10,27 +10,34 @@ export interface TriggerEditorModalProps {
 }
 
 export const TriggerEditorModal = (props: TriggerEditorModalProps) => {
-  const [triggers, setTriggers] = useState<IParsedTrigger[]>([]);
+  const [trigger, setTrigger] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (props.trigger) {
-      setTriggers(ParsedTriggerList.parseRawTrigger(props.trigger));
+      setTrigger(props.trigger);
     } else {
-      setTriggers([]);
+      setTrigger('');
     }
   }, [props.open, props.trigger]);
 
-  const onChangeTriggerType = (e: React.ChangeEvent<HTMLInputElement>, triggerType: TriggerType) => {
-    const checked = e.target.checked;
-    if (checked && !ParsedTriggerList.includes(triggers, triggerType)) {
-      setTriggers(ParsedTriggerList.add(triggers, triggerType));
-    } else if (!checked && ParsedTriggerList.includes(triggers, triggerType)) {
-      setTriggers(ParsedTriggerList.remove(triggers, triggerType));
-    }
+  const onAddTriggerPlaceholder = (triggerType: TriggerType) => {
+    let newValue = trigger;
+    if (trigger && trigger[trigger.length - 1] !== '_') newValue += '_';
+    setTrigger(newValue + triggerType + ':');
   };
 
-  const onTriggerValueChange = (e: React.ChangeEvent<HTMLInputElement>, triggerType: TriggerType) => {
-    setTriggers(ParsedTriggerList.changeValue(triggers, triggerType, e.target.value));
+  const onSave = () => {
+    const triggers = trigger.split('_');
+    const eachTriggerHasPair = triggers.every(x => x.split(':').length === 2);
+    const keys = triggers.map(x => x.split(':')[0]);
+    const eachKeyIsCorrect = keys.every(x => Object.values(TriggerType).includes(x as TriggerType));
+    if (!eachTriggerHasPair || !eachKeyIsCorrect) {
+      setError('Invalid trigger!');
+    } else {
+      setError('');
+      props.onSave(trigger);
+    }
   };
 
   return (
@@ -43,33 +50,24 @@ export const TriggerEditorModal = (props: TriggerEditorModalProps) => {
         Trigger Editor
       </ModalHeader>
       <ModalBody>
-        {Object.values(TriggerType).map(triggerType => {
-          const triggerValue = ParsedTriggerList.getValue(triggers, triggerType);
-          return (
-            <div className='trigger-item' key={triggerType}>
-              <div>
-                <Input
-                  className='trigger-item-checkbox'
-                  type='checkbox'
-                  checked={triggerValue !== null}
-                  onChange={(e) => onChangeTriggerType(e, triggerType)}
-                />{' '}
-                {triggerType}
-              </div>
-              <Input
-                className='trigger-item-value'
-                placeholder='value'
-                disabled={triggerValue === null}
-                value={triggerValue || ''}
-                onChange={e => onTriggerValueChange(e, triggerType)}
-              />
-            </div>
-          );
-        })}
+        {Object.values(TriggerType).map(triggerType =>
+          <Button className='trigger-button' onClick={() => onAddTriggerPlaceholder(triggerType)}>{triggerType}</Button>
+        )}
+        <Input
+          placeholder='trigger1-key:trigger1-data_trigger2-key:trigger2-data'
+          type='textarea'
+          value={trigger}
+          onChange={e => setTrigger(e.target.value)}
+        />
         <div className='margined-top in-row spaced-between'>
           <Button onClick={() => props.onClose()}>Close</Button>
-          <Button onClick={() => props.onSave(ParsedTriggerList.getRawTrigger(triggers))} color='success'>Save</Button>
+          <Button onClick={onSave} color='success'>Save</Button>
         </div>
+        {error &&
+          <Alert color='danger' className='trigger-alert'>
+            {error}
+          </Alert>
+        }
       </ModalBody>
     </Modal>
   );

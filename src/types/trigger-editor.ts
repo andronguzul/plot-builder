@@ -24,24 +24,6 @@ export class ParsedTriggerList {
     return triggers.some(x => x.key === triggerType);
   }
 
-  static add(triggers: IParsedTrigger[], triggerType: TriggerType): IParsedTrigger[] {
-    const triggersToMutate = [...triggers];
-    triggersToMutate.push({
-      key: triggerType,
-      value: '',
-    });
-    return triggersToMutate;
-  }
-
-  static remove(triggers: IParsedTrigger[], triggerType: TriggerType): IParsedTrigger[] {
-    const triggersToMutate = [...triggers];
-    const trigger = triggersToMutate.find(x => x.key === triggerType);
-    if (!trigger) return triggers;
-    const indx = triggersToMutate.indexOf(trigger);
-    triggersToMutate.splice(indx, 1);
-    return triggersToMutate;
-  }
-
   static getRawTrigger(triggers: IParsedTrigger[]): string {
     return triggers.map(trigger => `${trigger.key}:${trigger.value}`).join('_');
   }
@@ -72,14 +54,5 @@ export class ParsedTriggerList {
     const trigger = triggers.find(x => x.key === triggerType);
     if (!trigger) return null;
     return trigger.value;
-  }
-
-  static changeValue(triggers: IParsedTrigger[], triggerType: TriggerType, value: string): IParsedTrigger[] {
-    const triggersToMutate = [...triggers];
-    const trigger = triggersToMutate.find(x => x.key === triggerType);
-    if (!trigger) return triggers;
-    const indx = triggersToMutate.indexOf(trigger);
-    triggersToMutate[indx].value = value;
-    return triggersToMutate;
   }
 }

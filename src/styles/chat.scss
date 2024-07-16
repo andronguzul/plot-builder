@@ -391,13 +391,12 @@
 .trigger-editor-modal {
   color: black;
 
-  .trigger-item {
-    display: flex;
-    justify-content: space-between;
-    .trigger-item-value {
-      width: 300px;
-    }
-    margin-bottom: 10px;
+  .trigger-button {
+    margin-right: 5px;
+    margin-bottom: 5px;
+  }
+  .trigger-alert {
+    margin-top: 10px;
   }
 }
 
