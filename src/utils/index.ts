@@ -36,7 +36,7 @@ export function validateMessages(messages: IMessage[]): boolean {
       if (message.npcMessageData!.type === MessageType.Text) {
         if (!message.npcMessageData!.text) return false;
       } else {
-        if (!message.npcMessageData!.filename || !message.npcMessageData!.file_meta) return false;
+        if (!message.npcMessageData!.filename) return false;
       }
     }
   }
