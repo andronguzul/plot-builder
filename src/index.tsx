@@ -9,7 +9,7 @@ import {
 import './styles/index.scss';
 import { ChatPage } from './pages/Chat';
 import { AudioData } from './pages/AudioData';
-import { TriggersSequencePage } from './pages/TriggersSequence';
+import { TranslationsKeysPage } from './pages/TranslationsKeys';
 
 export const App = () => {
   const [searchParams] = useSearchParams();
@@ -17,7 +17,7 @@ export const App = () => {
     case '2':
       return <AudioData />;
     case '3':
-      return <TriggersSequencePage />
+      return <TranslationsKeysPage />
     default:
       return <ChatPage />;
   }

@@ -1,0 +1,14 @@
+.keys-page {
+  padding: 10px;
+  .header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  .content {
+    padding: 20px;
+    .key-row {
+      margin-top: 20px;
+    }
+  }
+}

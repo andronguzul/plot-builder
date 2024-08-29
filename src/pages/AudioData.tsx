@@ -240,7 +240,7 @@ export const AudioData = () => {
             setSearchParams({
               page: '3',
             });
-          }}>Sequence</Button>
+          }}>Keys</Button>
         </ButtonGroup>
       </div>
       <div className='content'>

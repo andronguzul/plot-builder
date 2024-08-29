@@ -173,7 +173,7 @@ export const ChatPage = () => {
         setSearchParams({
           page: '3',
         });
-      }}>Sequence</Button>
+      }}>Keys</Button>
     </>
   );
 
