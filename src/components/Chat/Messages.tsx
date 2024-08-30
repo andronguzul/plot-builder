@@ -111,10 +111,19 @@ export const Messages = (props: MessagesProps) => {
 
   const onTriggerValueChange = (value: string, msgIndx: number, dataItemIndx?: number) => {
     const messagesToMutate = [...props.data];
+
+    const changeOrRemove = (message: { trigger?: string }) => {
+      if (value) {
+        message.trigger = value;
+      } else {
+        delete message.trigger;
+      }
+    };
+
     if (dataItemIndx !== undefined) {
-      messagesToMutate[msgIndx].playerMessageData![dataItemIndx].trigger = value;
+      changeOrRemove(messagesToMutate[msgIndx].playerMessageData![dataItemIndx]);
     } else {
-      messagesToMutate[msgIndx].npcMessageData!.trigger = value;
+      changeOrRemove(messagesToMutate[msgIndx].npcMessageData!);
     }
     props.onChangeMessages(messagesToMutate);
   };

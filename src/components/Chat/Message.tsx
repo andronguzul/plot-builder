@@ -71,7 +71,7 @@ export const Message = (props: MessageProps) => {
     props.onClick();
   };
 
-  const onSubmitTriggerValue = (triggerValue: string) => {
+  const onSubmitTriggerValue = (triggerValue?: string) => {
     props.onTriggerChange(triggerValue);
     setTriggerOpen(false);
   };

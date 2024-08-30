@@ -28,6 +28,10 @@ export const TriggerEditorModal = (props: TriggerEditorModalProps) => {
   };
 
   const onSave = () => {
+    if (!trigger) {
+      setError('');
+      props.onSave();
+    }
     const triggers = trigger.split('_');
     const eachTriggerHasPair = triggers.every(x => x.split(':').length === 2);
     const keys = triggers.map(x => x.split(':')[0]);

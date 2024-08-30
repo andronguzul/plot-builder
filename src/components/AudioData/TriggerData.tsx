@@ -1,5 +1,4 @@
 import { Accordion, AccordionBody, AccordionHeader, AccordionItem, Button, Input } from 'reactstrap';
-import { ILanguage, Language } from '../../types';
 import { IBaseTrigger } from '../../types/audio';
 
 export interface TriggerDataProps<T> {
@@ -7,10 +6,10 @@ export interface TriggerDataProps<T> {
   opened: string[];
   accordionUpdateFn: Function;
   listUpdateFn: Function;
-  onAddItem: T;
+  newItem: T;
 }
 
-export const TriggerData = <T extends IBaseTrigger & ILanguage & Record<keyof T, string>>(props: TriggerDataProps<T>) => {
+export const TriggerData = <T extends IBaseTrigger & { text: string } & Record<keyof T, string>>(props: TriggerDataProps<T>) => {
   const onToggleAccordion = (id: string) => {
     const dataToMutate = [...props.opened];
     if (dataToMutate.includes(id)) {
@@ -25,8 +24,8 @@ export const TriggerData = <T extends IBaseTrigger & ILanguage & Record<keyof T,
     if (props.list.some(x => !x.trigger)) return;
     const dataToMutate = [...props.list];
     const data: Partial<T> = {};
-    for (const key of (Object.keys(props.onAddItem) as (keyof T)[])) {
-      data[key] = props.onAddItem[key];
+    for (const key of (Object.keys(props.newItem) as (keyof T)[])) {
+      data[key] = props.newItem[key];
     }
     dataToMutate.push(data as T);
     props.listUpdateFn(dataToMutate);
@@ -44,12 +43,8 @@ export const TriggerData = <T extends IBaseTrigger & ILanguage & Record<keyof T,
     props.listUpdateFn(dataToMutate);
   };
 
-  const getKeys = (item: T, languageKeys: boolean): (keyof T)[] => {
-    return (Object.keys(item) as (keyof T)[]).filter(key => {
-      const includes = Object.values(Language).includes(key as Language);
-      if (languageKeys) return includes;
-      return !includes;
-    });
+  const getKeys = (item: T): (keyof T)[] => {
+    return (Object.keys(item) as (keyof T)[]).filter(key => key !== 'text');
   };
 
   return (
@@ -60,10 +55,10 @@ export const TriggerData = <T extends IBaseTrigger & ILanguage & Record<keyof T,
             <AccordionHeader targetId={indx.toString()}>{item.trigger}</AccordionHeader>
             <AccordionBody accordionId={indx.toString()}>
               <div className='trigger-container'>
-                {getKeys(item, false).map(key =>
+                {getKeys(item).map(key =>
                   <Input
                     key={key.toString()}
-                    placeholder='trigger value'
+                    placeholder={`${key.toString()} value`}
                     className='margined-right'
                     value={item[key]}
                     onChange={(e) => onChangeListItem(indx, key, e.target.value)}
@@ -75,16 +70,13 @@ export const TriggerData = <T extends IBaseTrigger & ILanguage & Record<keyof T,
                 >Remove</Button>
               </div>
               <div className='text-container'>
-                {getKeys(item, true).map(key =>
-                  <Input
-                    key={key.toString()}
-                    type='textarea'
-                    placeholder={`${key.toString()} info`}
-                    value={item[key]}
-                    onChange={(e) => onChangeListItem(indx, key, e.target.value)}
-                    className='lang-container'
-                  />
-                )}
+                <Input
+                  type='textarea'
+                  placeholder={`text info`}
+                  value={item.text}
+                  onChange={(e) => onChangeListItem(indx, 'text', e.target.value)}
+                  className='lang-container'
+                />
               </div>
             </AccordionBody>
           </AccordionItem>

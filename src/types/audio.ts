@@ -20,17 +20,13 @@ export interface IRadioFile {
 
 export interface IPlayerThoughtsData {
   trigger: string;
-  en: string;
-  ru: string;
-  ua: string;
+  text: string;
 }
 
 export interface IRadioData {
   trigger: string;
   clipName: string;
-  en: string;
-  ru: string;
-  ua: string;
+  text: string;
 }
 
 export interface IBaseTrigger {
