@@ -1,5 +1,5 @@
 import { Accordion, AccordionBody, AccordionHeader, AccordionItem, Button, Input } from 'reactstrap';
-import { IBaseTrigger } from '../../types/audio';
+import { IAudio } from '../../types/audio';
 
 export interface TriggerDataProps<T> {
   list: T[];
@@ -9,7 +9,7 @@ export interface TriggerDataProps<T> {
   newItem: T;
 }
 
-export const TriggerData = <T extends IBaseTrigger & { text: string } & Record<keyof T, string>>(props: TriggerDataProps<T>) => {
+export const TriggerData = <T extends IAudio>(props: TriggerDataProps<T>) => {
   const onToggleAccordion = (id: string) => {
     const dataToMutate = [...props.opened];
     if (dataToMutate.includes(id)) {
@@ -43,10 +43,6 @@ export const TriggerData = <T extends IBaseTrigger & { text: string } & Record<k
     props.listUpdateFn(dataToMutate);
   };
 
-  const getKeys = (item: T): (keyof T)[] => {
-    return (Object.keys(item) as (keyof T)[]).filter(key => key !== 'text');
-  };
-
   return (
     <>
       <Accordion open={props.opened} {...{ toggle: (id: string) => onToggleAccordion(id) }}>
@@ -55,15 +51,18 @@ export const TriggerData = <T extends IBaseTrigger & { text: string } & Record<k
             <AccordionHeader targetId={indx.toString()}>{item.trigger}</AccordionHeader>
             <AccordionBody accordionId={indx.toString()}>
               <div className='trigger-container'>
-                {getKeys(item).map(key =>
-                  <Input
-                    key={key.toString()}
-                    placeholder={`${key.toString()} value`}
-                    className='margined-right'
-                    value={item[key]}
-                    onChange={(e) => onChangeListItem(indx, key, e.target.value)}
-                  />
-                )}
+                <Input
+                  placeholder={`trigger value`}
+                  className='margined-right'
+                  value={item.trigger}
+                  onChange={(e) => onChangeListItem(indx, 'trigger', e.target.value)}
+                />
+                <Input
+                  placeholder={`clipName value`}
+                  className='margined-right'
+                  value={item.clipName}
+                  onChange={(e) => onChangeListItem(indx, 'clipName', e.target.value)}
+                />
                 <Button
                   color='danger'
                   onClick={() => onRemoveListItem(indx)}
@@ -72,7 +71,7 @@ export const TriggerData = <T extends IBaseTrigger & { text: string } & Record<k
               <div className='text-container'>
                 <Input
                   type='textarea'
-                  placeholder={`text info`}
+                  placeholder={`text value`}
                   value={item.text}
                   onChange={(e) => onChangeListItem(indx, 'text', e.target.value)}
                   className='lang-container'

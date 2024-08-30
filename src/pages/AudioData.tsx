@@ -3,12 +3,12 @@ import { useSearchParams } from 'react-router-dom';
 import { Accordion, AccordionBody, AccordionHeader, AccordionItem, Button, ButtonGroup } from 'reactstrap';
 import { TriggerData } from '../components/AudioData/TriggerData';
 import { CleanButton } from '../components/CleanButton';
-import { IPlayerThoughts, IPlayerThoughtsFile, IRadio, IRadioFile } from '../types/audio';
+import { IAudio, IPlayerThoughtsFile, IRadioFile } from '../types/audio';
 
 export const AudioData = () => {
   const [, setSearchParams] = useSearchParams();
-  const [playerThoughts, setPlayerThoughts] = useState<IPlayerThoughts[]>([]);
-  const [radio, setRadio] = useState<IRadio[]>([]);
+  const [playerThoughts, setPlayerThoughts] = useState<IAudio[]>([]);
+  const [radio, setRadio] = useState<IAudio[]>([]);
   const [openedSections, setOpenedSections] = useState<string[]>([]);
   const [openedPlayerThoughts, setOpenedPlayerThoughts] = useState<string[]>([]);
   const [openedRadio, setOpenedRadio] = useState<string[]>([]);
@@ -17,8 +17,8 @@ export const AudioData = () => {
   const hiddenPlayerThoughtsFileInput = useRef<HTMLInputElement>(null);
   const hiddenRadioFileInput = useRef<HTMLInputElement>(null);
 
-  const playerThoughtsRef = useRef<IPlayerThoughts[]>();
-  const radioRef = useRef<IRadio[]>();
+  const playerThoughtsRef = useRef<IAudio[]>();
+  const radioRef = useRef<IAudio[]>();
   const openedPlayerThoughtsRef = useRef<string[]>();
   const openedRadioRef = useRef<string[]>();
   playerThoughtsRef.current = playerThoughts;
@@ -169,6 +169,7 @@ export const AudioData = () => {
                 accordionUpdateFn={setOpenedPlayerThoughts}
                 newItem={{
                   trigger: '',
+                  clipName: '',
                   text: ''
                 }}
               />

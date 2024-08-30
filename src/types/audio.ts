@@ -1,32 +1,15 @@
-
-export interface IPlayerThoughts {
+export interface IAudio {
   trigger: string;
   text: string;
+  clipName: string;
 }
 
 export interface IPlayerThoughtsFile {
-  playerThoughts: IPlayerThoughts[];
-}
-
-export interface IRadio {
-  trigger: string;
-  text: string;
-  clipName: string;
+  playerThoughts: IAudio[];
 }
 
 export interface IRadioFile {
-  radio: IRadio[];
-}
-
-export interface IPlayerThoughtsData {
-  trigger: string;
-  text: string;
-}
-
-export interface IRadioData {
-  trigger: string;
-  clipName: string;
-  text: string;
+  radio: IAudio[];
 }
 
 export interface IBaseTrigger {
