@@ -17,6 +17,7 @@ export enum TriggerType {
   SAVE = 'save',
   AFFECT_FUTURE = 'affect-future',
   AFFECTED_BY_PAST = 'affected-by-past',
+  MESSAGE_TIME = 'message-time'
 }
 
 export class ParsedTriggerList {
