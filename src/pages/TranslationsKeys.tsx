@@ -77,7 +77,6 @@ export const TranslationsKeysPage = () => {
       const result = localizationKeys.map(key => {
         const localization = {
           en: '',
-          ru: '',
           ua: '',
         };
         switch (currentLanguage) {
@@ -86,9 +85,6 @@ export const TranslationsKeysPage = () => {
             break;
           case Language.UA:
             localization.ua = key;
-            break;
-          case Language.EN:
-            localization.ru = key;
             break;
         }
         return localization;
