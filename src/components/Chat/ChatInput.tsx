@@ -22,7 +22,6 @@ export const ChatInput = (props: ChatInputProps) => {
   const [isCntrlDown, setIsCntrlDown] = useState(false);
   const [isEnterDown, setIsEnterDown] = useState(false);
   const [authorSelectorModalOpened, setAuthorSelectorModalOpened] = useState(false);
-  const [authorSwitchForbidden, setAuthorSwitchForbidden] = useState(false);
 
   const textInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -30,7 +29,6 @@ export const ChatInput = (props: ChatInputProps) => {
   useEffect(() => {
     if (props.editMessage) {
       setAuthor(props.editMessage.author);
-      if (props.editMessage.text) setAuthorSwitchForbidden(true);
       if (props.editMessage.type === MessageType.Text) {
         setMessage(props.editMessage.text || '');
         setActiveTab(MessageType.Text);
@@ -58,7 +56,6 @@ export const ChatInput = (props: ChatInputProps) => {
     setMessage('');
     setFilename('');
     setFileMeta('');
-    setAuthorSwitchForbidden(false);
     setIsEnterDown(false);
     setIsShiftDown(false);
     setIsCntrlDown(false);
@@ -100,7 +97,7 @@ export const ChatInput = (props: ChatInputProps) => {
     if (e.key === 'Shift') setIsShiftDown(true);
     else if (e.key === 'Enter') setIsEnterDown(true);
     else if (e.key === 'Control') setIsCntrlDown(true);
-    else if ((e.key === '.' || e.key === 'ю') && isCntrlDown && !authorSwitchForbidden) switchAuthour();
+    else if ((e.key === '.' || e.key === 'ю') && isCntrlDown) switchAuthour();
   };
 
   const onKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -131,8 +128,8 @@ export const ChatInput = (props: ChatInputProps) => {
           </NavItem>
         </Nav>
         <div
-          className={`message-author ${authorSwitchForbidden ? 'disabled' : ''}`}
-          onClick={() => !authorSwitchForbidden && setAuthorSelectorModalOpened(true)}
+          className={`message-author`}
+          onClick={() => setAuthorSelectorModalOpened(true)}
         >
           {author}
         </div>
