@@ -37,6 +37,7 @@ export interface MessageProps {
 
 export const Message = (props: MessageProps) => {
   const [triggerOpen, setTriggerOpen] = useState(false);
+  const [plusClicked, setPlustClicked] = useState(false);
 
   const messageRef = useRef<HTMLDivElement>(null);
 
@@ -68,6 +69,9 @@ export const Message = (props: MessageProps) => {
     if (isPlayerMessage && !props.isSelected) {
       props.onSelectDataItem!();
     }
+    if (props.thisClicked) {
+      setPlustClicked(false);
+    }
     props.onClick();
   };
 
@@ -93,7 +97,13 @@ export const Message = (props: MessageProps) => {
             {isPlayerMessage &&
               <div className='add-button' onClick={() => props.onAddDataItem!()}>﬩</div>
             }
-            <div className='add-button' onClick={() => props.onAddMessage()}>＋</div>
+            {plusClicked ?
+              <ButtonGroup className='message-actions'>
+                <Button onClick={() => props.onAddMessage(true)}>NPC</Button>
+                <Button onClick={() => props.onAddMessage(false)}>PLR</Button>
+              </ButtonGroup> :
+              <div className='add-button' onClick={() => setPlustClicked(true)}>＋</div>
+            }
           </div>
         }
         <div

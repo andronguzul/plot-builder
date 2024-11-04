@@ -180,6 +180,7 @@ export const Chat = (props: ChatProps) => {
           onRestructureFromDataChange={onRestructureFromDataChange}
           onRestructureToDataChange={onRestructureToDataChange}
           onFork={onFork}
+          members={props.members}
         />
       </div>
       <ChatInput

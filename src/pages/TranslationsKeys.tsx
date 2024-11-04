@@ -103,12 +103,7 @@ export const TranslationsKeysPage = () => {
             setSearchParams({
               page: '1',
             });
-          }}>Chat</Button>
-          <Button onClick={() => {
-            setSearchParams({
-              page: '2',
-            });
-          }}>Audio</Button>
+          }}>Back</Button>
         </ButtonGroup>
       </div>
       <div className='content'>

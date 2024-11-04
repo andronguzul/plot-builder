@@ -174,6 +174,11 @@ export const ChatPage = () => {
           page: '3',
         });
       }}>Keys</Button>
+      <Button onClick={() => {
+        setSearchParams({
+          page: '4',
+        });
+      }}>Validator</Button>
     </>
   );
 

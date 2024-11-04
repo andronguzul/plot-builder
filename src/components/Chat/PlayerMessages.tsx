@@ -54,8 +54,8 @@ export const PlayerMessages = (props: PlayerMessagesProps) => {
           onClick={() => props.restructurePhase === 2 ? props.onRestructureToDataChange?.(props.msg, dataItemIndx) : props.onClick(dataItem)}
           thisClicked={dataItem === props.clickedMsg}
           someClicked={props.someClicked}
-          onAddDataItem={() => props.onAdd(props.msgIndx, dataItemIndx)}
-          onAddMessage={() => props.onAdd(props.msgIndx)}
+          onAddDataItem={() => props.onAdd(props.msgIndx, false, dataItemIndx)}
+          onAddMessage={(isNpc: boolean) => props.onAdd(props.msgIndx, isNpc)}
           onRemove={() => props.onRemove(props.msgIndx, dataItemIndx)}
           onFork={() => props.onFork(dataItem)}
           restructurePhase={props.restructurePhase}

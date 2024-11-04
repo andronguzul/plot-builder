@@ -17,6 +17,7 @@ export interface MessagesProps {
   onRestructureFromDataChange?: Function;
   onRestructureToDataChange?: Function;
   onFork: Function;
+  members: string[];
 }
 
 export const Messages = (props: MessagesProps) => {
@@ -48,7 +49,7 @@ export const Messages = (props: MessagesProps) => {
     props.onEditMessage(msg, messagesToMutate);
   };
 
-  const onAdd = (msgIndx: number, dataItemIndx?: number) => {
+  const onAdd = (msgIndx: number, isNpc = false, dataItemIndx?: number) => {
     const messagesToMutate = removeField(props.data, 'isEditing');
     const messageToMutate = messagesToMutate[msgIndx];
     if (dataItemIndx !== undefined) {
@@ -66,11 +67,11 @@ export const Messages = (props: MessagesProps) => {
       messageToMutate.playerMessageData!.push(msg);
       props.onEditMessage(msg, messagesToMutate);
     } else {
-      const previousMsg = messagesToMutate[msgIndx];
-      if (previousMsg.npcMessageData) {
+      if (isNpc) {
+        const previousMsg = messagesToMutate[msgIndx];
         const msg: INpcMessageData = {
           id: uuid(),
-          author: previousMsg.npcMessageData.author,
+          author: previousMsg.npcMessageData?.author ?? props.members[0],
           text: '',
           isEditing: true,
           type: MessageType.Text,
@@ -179,7 +180,7 @@ export const Messages = (props: MessagesProps) => {
                 onEdit={() => onEdit(msgIndx)}
                 onClick={() => props.onClick(msg.npcMessageData)}
                 thisClicked={msg.npcMessageData === props.clickedMsg}
-                onAddMessage={() => onAdd(msgIndx)}
+                onAddMessage={(isNpc: boolean) => onAdd(msgIndx, isNpc)}
                 onRemove={() => onRemove(msgIndx)}
                 restructurePhase={props.restructurePhase}
                 existsInRestructureFromData={existsInRestructureFromData}
@@ -205,6 +206,7 @@ export const Messages = (props: MessagesProps) => {
                 onRestructureFromDataChange={props.onRestructureFromDataChange}
                 onRestructureToDataChange={props.onRestructureToDataChange}
                 onFork={props.onFork}
+                members={props.members}
               />
             }
           </React.Fragment>

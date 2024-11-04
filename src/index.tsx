@@ -10,6 +10,7 @@ import './styles/index.scss';
 import { ChatPage } from './pages/Chat';
 import { AudioData } from './pages/AudioData';
 import { TranslationsKeysPage } from './pages/TranslationsKeys';
+import { ValidatorPage } from './pages/Validator';
 
 export const App = () => {
   const [searchParams] = useSearchParams();
@@ -18,6 +19,8 @@ export const App = () => {
       return <AudioData />;
     case '3':
       return <TranslationsKeysPage />
+    case '4':
+      return <ValidatorPage />
     default:
       return <ChatPage />;
   }
